@@ -1,0 +1,27 @@
+<div class="wrapper">
+    <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('../../assets/img/landing.jpeg');">
+        <div class="filter"></div>
+    </div>
+</div>
+<div class="container">
+    <div class="row" >
+          <div class="col-lg-4 col-md-6 mx-auto">
+            <div class="card card-register bg-transparent">
+              <h3 class="title mx-auto">Predict approved or withdrawn status of your drugs</h3>
+              <form #f="ngForm" class="register-form" (ngSubmit) = "onSubmit(f)">
+                <label>Smiles</label>
+                    <div class="input-group bg-danger">
+                      <input type="text" class="form-control" name="smilesInput" ngModel required
+                             #first="ngModel" placeholder="SMILES">
+                    </div>
+                <button class="btn btn-danger btn-block btn-round">Predict</button>
+              </form>
+            </div>
+          </div>
+        </div>
+</div>
+
+
+<!--<div class="container" style="text-align: center;">-->
+<!--    <button type="button" class="btn btn-outline-danger btn-lg">{{ predictedProbability }}</button>-->
+<!--</div>-->
