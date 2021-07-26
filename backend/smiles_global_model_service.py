@@ -14,7 +14,7 @@ CORS(app)
 
 class Inference:
     def __init__(self, weights_path):
-        self.model = TransformerNet(weights_path)
+        self.model = TransformerNet.load_from_checkpoint(weights_path)
 
     def forward(self, node, mask, adj, dist):
         out = self.model(node, mask, adj, dist)
@@ -30,7 +30,7 @@ def predict():
     logit = model.forward(node, mask, adj, dist)
     odds = np.exp(logit)
     probability = odds / (1 + odds)
-    probability = probability[0] * 100
+    probability = round(probability[0] * 100, 2)
 
     return jsonify({'predictedProbability': probability})
 

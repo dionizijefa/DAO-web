@@ -49,8 +49,6 @@ class Conf:
 class TransformerNet(pl.LightningModule, ABC):
     def __init__(
             self,
-            weights_path,
-
     ):
         super().__init__()
 
@@ -69,19 +67,7 @@ class TransformerNet(pl.LightningModule, ABC):
             'aggregation_type': 'mean'
         }
 
-
         self.model = make_model(**self.model_params)
-        pretrained_name = root / weights_path
-        pretrained_state_dict = torch.load(pretrained_name, map_location='cuda:0')
-
-        model_state_dict = self.model.state_dict()
-        for name, param in pretrained_state_dict.items():
-            if 'generator' or 'epoch' in name:
-                continue
-            if isinstance(param, torch.nn.Parameter):
-                param = param.data
-            model_state_dict[name].copy_(param)
-
 
     def forward(self, node_features, batch_mask, adjacency_matrix, distance_matrix):
         out = self.model(node_features, batch_mask, adjacency_matrix, distance_matrix, None)
