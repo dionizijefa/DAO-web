@@ -4,6 +4,7 @@ from pathlib import Path
 from pprint import pformat
 from typing import Dict, Optional
 import pytorch_lightning as pl
+from rdkit import Chem
 from torchmetrics.functional import average_precision, auroc
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.optim import Adam
@@ -12,7 +13,7 @@ from transformer import make_model
 from rdkit.Chem import MolFromSmiles, AllChem
 from data_utils import featurize_mol
 
-root = Path(__file__).resolve().parents[1].absolute()
+root = Path(__file__).resolve().parents[0].absolute()
 
 
 @dataclasses.dataclass(
@@ -48,12 +49,11 @@ class Conf:
 class TransformerNet(pl.LightningModule, ABC):
     def __init__(
             self,
-            hparams,
-            reduce_lr: Optional[bool] = True,
+            weights_path,
+
     ):
         super().__init__()
-        self.save_hyperparameters(hparams)
-        self.reduce_lr = reduce_lr
+
         self.model_params = {
             'd_atom': 28,
             'd_model': 1024,
@@ -69,18 +69,19 @@ class TransformerNet(pl.LightningModule, ABC):
             'aggregation_type': 'mean'
         }
 
+
         self.model = make_model(**self.model_params)
-        pretrained_name = root / 'pretrained_weights.pt'
-        pretrained_state_dict = torch.load(pretrained_name)
-        pl.seed_everything(hparams['seed'])
+        pretrained_name = root / weights_path
+        pretrained_state_dict = torch.load(pretrained_name, map_location='cuda:0')
 
         model_state_dict = self.model.state_dict()
         for name, param in pretrained_state_dict.items():
-            if 'generator' in name:
+            if 'generator' or 'epoch' in name:
                 continue
             if isinstance(param, torch.nn.Parameter):
                 param = param.data
             model_state_dict[name].copy_(param)
+
 
     def forward(self, node_features, batch_mask, adjacency_matrix, distance_matrix):
         out = self.model(node_features, batch_mask, adjacency_matrix, distance_matrix, None)
@@ -197,9 +198,9 @@ def process_molecule(smiles):
     node_features, adjacency_matrix, distance_matrix = featurize_mol(
         mol, add_dummy_node=True, one_hot_formal_charge=True
     )
-    node_features = torch.Tensor(node_features)
-    adjacency_matrix = torch.Tensor(adjacency_matrix)
-    distance_matrix = torch.Tensor(distance_matrix)
+    node_features = torch.Tensor(node_features).unsqueeze(0)
+    adjacency_matrix = torch.Tensor(adjacency_matrix).unsqueeze(0)
+    distance_matrix = torch.Tensor(distance_matrix).unsqueeze(0)
     batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
 
     return node_features, adjacency_matrix, distance_matrix, batch_mask

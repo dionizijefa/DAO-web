@@ -13,11 +13,11 @@ CORS(app)
 
 
 class Inference:
-    def __init__(self, ckpt_path):
-        self.model = TransformerNet.load_from_checkpoint(ckpt_path)
+    def __init__(self, weights_path):
+        self.model = TransformerNet(weights_path)
 
-    def forward(self, node, adj, dist, mask):
-        out = self.model.forward(node, adj, dist, mask, None)
+    def forward(self, node, mask, adj, dist):
+        out = self.model(node, mask, adj, dist)
         out = out.squeeze(-1).detach().cpu().numpy()
         return out
 
@@ -26,11 +26,11 @@ class Inference:
 def predict():
     input_smiles = request.get_json()['smilesInput']
     node, adj, dist, mask = process_molecule(input_smiles)
-
     model = Inference('epoch=6-step=405.ckpt')
-    logit = model.forward(node, adj, dist, mask)
+    logit = model.forward(node, mask, adj, dist)
     odds = np.exp(logit)
-    probability = odds / (1+odds)
+    probability = odds / (1 + odds)
+    probability = probability[0] * 100
 
     return jsonify({'predictedProbability': probability})
 
