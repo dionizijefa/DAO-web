@@ -18,6 +18,5 @@ def predict():
 
     return jsonify({'predictedProbability': atoms})
 
-
 if __name__ == '__main__':
     app.run(host=HOST, debug=True, port=PORT)

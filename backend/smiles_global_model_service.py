@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-from rdkit.Chem import MolFromSmiles
 from flask_cors import CORS
 from inference_model import TransformerNet
 from inference_model import process_molecule

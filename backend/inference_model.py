@@ -197,6 +197,9 @@ def process_molecule(smiles):
     node_features, adjacency_matrix, distance_matrix = featurize_mol(
         mol, add_dummy_node=True, one_hot_formal_charge=True
     )
+    node_features = torch.Tensor(node_features)
+    adjacency_matrix = torch.Tensor(adjacency_matrix)
+    distance_matrix = torch.Tensor(distance_matrix)
     batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
 
     return node_features, adjacency_matrix, distance_matrix, batch_mask
