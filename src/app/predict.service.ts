@@ -4,8 +4,8 @@ import {Prediction, SmilesInput} from './backend.types';
 import {Observable} from 'rxjs';
 import 'rxjs/add/operator/map'
 
-const SERVER_URL = '/';
 
+const SERVER_URL = 'http://192.168.88.36:8081/';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +14,11 @@ export class PredictService {
 
   constructor(private http: HttpClient) { }
 
-  public predict(smilesInput: SmilesInput): Observable<any> {
-    return this.http.post(
-        '${SERVER_URL}predict', smilesInput
+  public predict(smilesInput: SmilesInput): Observable<number> {
+    return this.http.post<Prediction>(
+        `${SERVER_URL}predict`, smilesInput
     ).map(
-        (res) => res
+        (res) => res.predictedProbability
     );
   }
 }

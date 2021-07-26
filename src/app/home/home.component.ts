@@ -10,15 +10,14 @@ import {NgForm} from '@angular/forms';
 })
 
 export class HomeComponent implements OnInit {
-    public smilesInput: SmilesInput = new SmilesInput();
-    public predictedProbability: Prediction;
+    public predictedProbability: number;
 
     constructor(private predictService: PredictService) { }
 
     ngOnInit() {}
 
-    public predict() {
-        this.predictService.predict(this.smilesInput).subscribe(
+    public predict(smilesInput) {
+        return this.predictService.predict(smilesInput).subscribe(
             (predictedProbability) => {
                 this.predictedProbability = predictedProbability;
             }
@@ -26,6 +25,7 @@ export class HomeComponent implements OnInit {
     }
 
     onSubmit(f: NgForm) {
-        console.log(f.value)
+        this.predict(f.value);
+        console.log(this.predictedProbability);
     }
 }
