@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import 'rxjs/add/operator/map'
 
 
-const SERVER_URL = 'http://0.0.0.0:8081/';
+const SERVER_URL = 'http://192.168.1.159:8081/';
 
 @Injectable({
   providedIn: 'root'
