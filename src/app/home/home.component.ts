@@ -11,6 +11,7 @@ import {NgForm} from '@angular/forms';
 
 export class HomeComponent implements OnInit {
     public predictedProbability: number;
+    public generatedPrediction = false;
 
     constructor(private predictService: PredictService) { }
 
@@ -26,6 +27,7 @@ export class HomeComponent implements OnInit {
 
     onSubmit(f: NgForm) {
         this.predict(f.value);
-        console.log(this.predictedProbability);
+        this.generatedPrediction = true;
+        console.log(f)
     }
 }
