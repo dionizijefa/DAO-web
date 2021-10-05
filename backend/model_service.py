@@ -16,7 +16,10 @@ def predict():
     dao = DAOWeb()
     probability, predicted_class, approved_p, withdrawn_p = dao.predict(input_smiles)
 
-    return jsonify({'predictedProbability': probability})
+    return jsonify({'predictedProbability': probability,
+                    'predictedClass': predicted_class,
+                    'approvedP': approved_p,
+                    'withdrawnP': withdrawn_p})
 
 if __name__ == '__main__':
     app.run(host=HOST, debug=True, port=PORT)

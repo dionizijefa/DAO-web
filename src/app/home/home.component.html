@@ -42,3 +42,13 @@
 </div>
 
 <div class="container" *ngIf=generatedPrediction>
+    <div class="col-lg-12">
+            <h3>Drug Attrition Oracle - Prediction and explanation</h3>
+            <p>Probability of molecule being withdrawn class {{prediction['predictedProbability']}}%</p>
+            <p><ngb-progressbar [showValue]="true" type="danger" [value]="prediction['predictedProbability']" [max]="100"></ngb-progressbar></p>
+            <p>P value withdrawn {{prediction['withdrawnP']}}</p>
+<!--            <ngx-slider [(value)]="prediction['withdrawnP']" [options]="approvedSlider"></ngx-slider>-->
+            <p>P value approved {{prediction['approvedP']}}</p>
+            <p>Predicted class {{prediction['predictedClass']}}</p>
+    </div>
+</div>

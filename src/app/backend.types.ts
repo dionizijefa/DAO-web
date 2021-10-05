@@ -4,4 +4,7 @@ export class SmilesInput {
 
 export class Prediction {
     predictedProbability: number;
+    approvedP: number;
+    withdrawnP: number;
+    predictedClass: number;
 }

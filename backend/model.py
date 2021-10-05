@@ -207,7 +207,7 @@ class DAOWeb:
         data = self.smiles2graph(smiles)
         data.batch = zeros(data.num_nodes, dtype=long)
         output = self.model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
-        output = round((1 / (1 + np.exp(-output)) * 100), 2)
+        output = round(((1 / (1 + np.exp(-output))) * 100), 2)
         predicted_class = 1 if output > 53 else 0
         approved_calibration = np.loadtxt(root / 'approved_calibration.csv') * 100
         withdrawn_calibration = np.loadtxt(root / 'withdrawn_calibration.csv') * 100
@@ -216,7 +216,7 @@ class DAOWeb:
         withdrawn_p_value = (np.searchsorted(withdrawn_calibration, output)) \
                             / (len(withdrawn_calibration) + 1)
 
-        return output, predicted_class, approved_p_value, withdrawn_p_value
+        return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2)
 
 
 

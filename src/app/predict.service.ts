@@ -15,11 +15,11 @@ export class PredictService {
 
   constructor(private http: HttpClient) { }
 
-  public predict(smilesInput: SmilesInput): Observable<number> {
+  public predict(smilesInput: SmilesInput): Observable<Prediction> {
     return this.http.post<Prediction>(
         `${SERVER_URL}predict`, smilesInput
     ).map(
-        (res) => res.predictedProbability
+        (res) => res,
     );
   }
 }
