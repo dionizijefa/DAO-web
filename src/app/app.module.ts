@@ -10,7 +10,8 @@ import { FooterComponent } from './shared/footer/footer.component';
 import {LandingComponent} from './landing/landing.component';
 import {HomeComponent} from './home/home.component';
 import {HttpClientModule} from '@angular/common/http';
-import {NgxSliderModule} from "@angular-slider/ngx-slider";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -19,7 +20,7 @@ import {NgxSliderModule} from "@angular-slider/ngx-slider";
     NavbarComponent,
     FooterComponent,
     LandingComponent,
-    HomeComponent
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -28,7 +29,8 @@ import {NgxSliderModule} from "@angular-slider/ngx-slider";
     RouterModule,
     AppRoutingModule,
     HttpClientModule,
-    NgxSliderModule,
+    BrowserAnimationsModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

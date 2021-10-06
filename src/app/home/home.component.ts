@@ -1,9 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import {Prediction, SmilesInput} from '../backend.types';
+import {Explanation, Prediction, SmilesInput} from '../backend.types';
 import {PredictService} from '../predict.service';
 import {NgForm} from '@angular/forms';
-import { Options } from '@angular-slider/ngx-slider';
-
+import {
+    create,
+    forceCenter,
+    forceCollide,
+    forceLink,
+    forceManyBody,
+    forceSimulation,
+    json,
+    select
+} from '../../custom-d3';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -13,18 +21,10 @@ import { Options } from '@angular-slider/ngx-slider';
 export class HomeComponent implements OnInit {
     public prediction: Prediction;
     public generatedPrediction = false;
-    public approvedSlider: Options = {
-            showTicksValues: true,
-            floor: 0,
-            ceil: 1,
-            ticksArray: [0.2, 0.4, 0.6, 0.8],
-            disabled: true,
-            // stepsArray: [
-            //   {value: 0.0, legend: 'With an error rate of at most 100% this class is true'},
-            //   {value: 1.0, legend: 'With an error rate of at most 0% this class is true'},
-            // ]
-  };
-
+    public moleculeSmiles: SmilesInput;
+    public explainerRunning = false;
+    public explanation: Explanation;
+    public generatedExplanation = false;
 
     constructor(private predictService: PredictService) {
     }
@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit {
 
     public predict(smilesInput) {
         this.generatedPrediction = true;
+        this.moleculeSmiles = smilesInput;
         return this.predictService.predict(smilesInput).subscribe(
             (prediction) => {
                 this.prediction = prediction;
@@ -41,8 +42,23 @@ export class HomeComponent implements OnInit {
         );
     }
 
+    public explain(smilesInput) {
+        return this.predictService.explain(smilesInput).subscribe(
+            (explanation) => {
+                this.explanation = explanation;
+                this.explainerRunning = false;
+                this.generatedExplanation = true;
+                console.log(this.explanation.graph)
+            },
+        );
+    }
+
     onSubmit(f: NgForm) {
         this.predict(f.value);
+    }
 
+    onExplain() {
+        this.explainerRunning = true;
+        this.explain(this.moleculeSmiles);
     }
 }

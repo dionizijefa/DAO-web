@@ -45,10 +45,28 @@
     <div class="col-lg-12">
             <h3>Drug Attrition Oracle - Prediction and explanation</h3>
             <p>Probability of molecule being withdrawn class {{prediction['predictedProbability']}}%</p>
-            <p><ngb-progressbar [showValue]="true" type="danger" [value]="prediction['predictedProbability']" [max]="100"></ngb-progressbar></p>
-            <p>P value withdrawn {{prediction['withdrawnP']}}</p>
-<!--            <ngx-slider [(value)]="prediction['withdrawnP']" [options]="approvedSlider"></ngx-slider>-->
+            <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
+            class="cold-md-4 ml-auto mr-auto">
+            </div>
+            <ng-template #thenTemplate>
+                <p><ngb-progressbar type="success" [value]="prediction['predictedProbability']"
+                      [max]="100"></ngb-progressbar></p>
+            </ng-template>
+            <ng-template #elseTemplate>
+                <p><ngb-progressbar type="danger" [value]="prediction['predictedProbability']"
+                                      [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar></p>
+            </ng-template>
             <p>P value approved {{prediction['approvedP']}}</p>
+            <p><ngb-progressbar type="secondary" [value]="prediction['approvedP']"
+                      [max]="1">{{prediction['approvedP']}}</ngb-progressbar></p>
+            <p>P value withdrawn {{prediction['withdrawnP']}}</p>
+        <p><ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
+                      [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar></p>
             <p>Predicted class {{prediction['predictedClass']}}</p>
+    <button *ngIf="explainerRunning==false" (click)="onExplain()" class="btn btn-danger btn-block btn-round">Explain predictions</button>
+    <mat-progress-spinner *ngIf="explainerRunning==true" mode="indeterminate"></mat-progress-spinner>
+    </div>
+    <div *ngIf="generatedExplanation==true">
+        <div id="moleculeGraph"></div>
     </div>
 </div>

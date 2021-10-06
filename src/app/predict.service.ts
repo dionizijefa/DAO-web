@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Prediction, SmilesInput} from './backend.types';
+import {Explanation, Prediction, SmilesInput} from './backend.types';
 import {Observable} from 'rxjs';
 import 'rxjs/add/operator/map'
 
@@ -18,6 +18,14 @@ export class PredictService {
   public predict(smilesInput: SmilesInput): Observable<Prediction> {
     return this.http.post<Prediction>(
         `${SERVER_URL}predict`, smilesInput
+    ).map(
+        (res) => res,
+    );
+  }
+
+  public explain(smilesInput: SmilesInput): Observable<Explanation> {
+    return this.http.post<Explanation>(
+        `${SERVER_URL}explain`, smilesInput
     ).map(
         (res) => res,
     );

@@ -8,3 +8,8 @@ export class Prediction {
     withdrawnP: number;
     predictedClass: number;
 }
+
+export class Explanation {
+    graph: string;
+    featureImportance: string;
+}
