@@ -9,11 +9,10 @@ PORT = 8081
 app = Flask(__name__)
 CORS(app)
 
-dao = DAOWeb()
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    dao = DAOWeb()
     input_smiles = request.get_json()['smilesInput']
     probability, predicted_class, approved_p, withdrawn_p = dao.predict(input_smiles)
 
@@ -25,6 +24,7 @@ def predict():
 
 @app.route('/explain', methods=['POST'])
 def explain():
+    dao = DAOWeb()
     input_smiles = request.get_json()['smilesInput']
     graph, feature_importance = dao.explain(input_smiles)
 

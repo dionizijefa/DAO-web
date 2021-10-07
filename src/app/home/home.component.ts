@@ -1,17 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Explanation, Prediction, SmilesInput} from '../backend.types';
 import {PredictService} from '../predict.service';
 import {NgForm} from '@angular/forms';
-import {
-    create,
-    forceCenter,
-    forceCollide,
-    forceLink,
-    forceManyBody,
-    forceSimulation,
-    json,
-    select
-} from '../../custom-d3';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -19,6 +9,8 @@ import {
 })
 
 export class HomeComponent implements OnInit {
+    @ViewChild('moleculeGraph') moleculeGraph: ElementRef;
+
     public prediction: Prediction;
     public generatedPrediction = false;
     public moleculeSmiles: SmilesInput;
@@ -48,6 +40,7 @@ export class HomeComponent implements OnInit {
                 this.explanation = explanation;
                 this.explainerRunning = false;
                 this.generatedExplanation = true;
+                this.moleculeGraph.nativeElement.innerHTML = this.explanation['graph']
                 console.log(this.explanation.graph)
             },
         );

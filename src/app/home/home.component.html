@@ -63,10 +63,11 @@
         <p><ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
                       [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar></p>
             <p>Predicted class {{prediction['predictedClass']}}</p>
-    <button *ngIf="explainerRunning==false" (click)="onExplain()" class="btn btn-danger btn-block btn-round">Explain predictions</button>
+    <button *ngIf="generatedExplanation==false" (click)="onExplain()" class="btn btn-danger btn-block btn-round">Explain predictions</button>
     <mat-progress-spinner *ngIf="explainerRunning==true" mode="indeterminate"></mat-progress-spinner>
     </div>
+    <div #moleculeGraph></div>
     <div *ngIf="generatedExplanation==true">
-        <div id="moleculeGraph"></div>
+        <div #moleculeGraph></div>
     </div>
 </div>

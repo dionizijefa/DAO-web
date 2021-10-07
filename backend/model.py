@@ -1,16 +1,17 @@
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot
-from networkx.readwrite import json_graph
+from matplotlib import pyplot as plt
 from rdkit import Chem, RDConfig
-from rdkit.Chem import HybridizationType, ChemicalFeatures
+from rdkit.Chem import HybridizationType, ChemicalFeatures, rdDepictor
+from rdkit.Chem.Draw import rdMolDraw2D
+from scipy.stats import zscore
 from torch_geometric.data import Data
 from torch_geometric.nn import EGConv, global_mean_pool, GNNExplainer
 from torch.nn import Sequential, BatchNorm1d, ReLU, Linear, Module, ModuleList
-from torch import load, Tensor, long, zeros
-from torch_geometric.utils import to_networkx
-from json import dumps
+from torch import load, Tensor, long, zeros, manual_seed
+import seaborn as sns
+from random import seed
 
 fdef_name = Path(RDConfig.RDDataDir) / 'BaseFeatures.fdef'
 factory = ChemicalFeatures.BuildFeatureFactory(str(fdef_name))
@@ -223,45 +224,78 @@ class DAOWeb:
 
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2)
 
-    def explain(self, smiles, threshold=0, epochs=300):
+    def explain(self, smiles, epochs=300):
         features = ["is_boron", "is_carbon", "is_nitrogen", "is_oxygen", "is_flourine", "is_phosporus", "is_sulfur",
                     "is_chlorine", "is_bromine", "is_iodine", "is_other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
                     "four_Hs", "is_s", "is_sp", "is_sp2", "is_sp3", "is_sp3d", "is_sp3d2", "unspecified_hybr",
                     "is_inring", "is_aromatic", "is_donor", "is_acceptor"]
 
-        explainer = GNNExplainer(self.model, epochs=epochs)
-        data = self.smiles2graph(r'{}'.format(smiles))
+        # set seeds for initializing mask in GNN explainer
+        manual_seed(0)
+        seed(0)
+        np.random.seed(0)
+
+        explainer = GNNExplainer(self.model, epochs=epochs, return_type='raw')
+        data = self.smiles2graph(smiles)
         data.batch = zeros(data.num_nodes, dtype=long)
         node_feat_mask, edge_mask = explainer.explain_graph(data.x, data.edge_index)
-        edge_mask = edge_mask.detach().numpy()
+
+        # node importance
         node_feat_mask = node_feat_mask.detach().numpy()
-        edge_mask = edge_mask / edge_mask.max()
-        edge_mask = np.where(edge_mask > threshold, 1, 0).tolist()
-        viridis = pyplot.cm.get_cmap('YlOrRd')
-        color_map = []
-        for i in edge_mask:
-            color = viridis(i)
-            color_map.append(color)
-        graph = Data(
-            x=data.x,
-            edge_index=data.edge_index,
-            edge_attrs=color_map,
-            node_labels=data.feature_names.tolist(),
-        )
-        g = to_networkx(graph, to_undirected=True, edge_attrs=['edge_attrs'], node_attrs=['node_labels'])
-        for i in g.nodes:
-            g.nodes[i]['atom'] = g.nodes[i]['node_labels'][0]
+        node_feat_importance = pd.DataFrame(data=node_feat_mask[np.newaxis], columns=features, index=[0])
 
-        node_feat_importance = pd.DataFrame(
-            data=node_feat_mask[np.newaxis], columns=features, index=[0]
-        ).to_json(
-            index=False,
-            orient='split'
-        )
-        graph_json = json_graph.node_link_data(g)
-        graph_json = dumps(graph_json)
 
-        return graph_json, node_feat_importance
+        # edge importance
+        edge_mask = edge_mask.detach().numpy()
+        edge_mask = abs(zscore(edge_mask))
+        highlighted_edges = list((np.where(edge_mask > 1)[0]).astype(object))
+        edge_index = data.edge_index.detach().cpu().numpy()
+
+        # edge indices contain both direction so we need to drop one and save a copy
+        final_edge = edge_index[:, ::2]
+        normal = []  # first direction in edge mask
+        reverse = []  # second direction
+        for high in highlighted_edges:
+            normal.append(list(edge_index[:, high]))
+            reverse.append(list(edge_index[:, high][::-1]))
+
+        # find bonds to higlight
+        bonds_to_highlight = []
+        for i in range(len(final_edge[0])):
+            atom_1 = final_edge[0][i]
+            atom_2 = final_edge[1][i]
+            bond = [atom_1, atom_2]
+            if bond in normal:
+                bonds_to_highlight.append(i)
+                continue
+            if bond in reverse:
+                bonds_to_highlight.append(i)
+
+        mol = Chem.MolFromSmiles(r'{}'.format(smiles))
+        rdDepictor.Compute2DCoords(mol)
+        drawer = rdMolDraw2D.MolDraw2DSVG(400, 200)
+        drawer.DrawMolecule(mol, highlightAtoms=[], highlightBonds=bonds_to_highlight)
+        drawer.FinishDrawing()
+        svg = drawer.GetDrawingText().replace('svg:', '')
+        molecule_vis = svg
+
+        fig, ax = plt.subplots()
+        ax.set_xlim(0, 1)
+        sns.barplot(data=node_feat_importance, orient='horizontal', ax=ax
+                    )
+
+        """Atom symbols in feature importance
+        mol = Chem.MolFromSmiles(r'{}'.format(smiles))
+        atoms = []
+        for i in bonds_to_highlight:
+            atoms.append(mol.GetBonds()[i].GetBeginAtomIdx())
+            atoms.append(mol.GetBonds()[i].GetEndAtomIdx())
+        symbols = []
+        for i in atoms:
+            symbols.append(mol.GetAtoms()[i].GetSymbol())
+        """
+
+        return molecule_vis, 0
 
 
 
