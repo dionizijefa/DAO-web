@@ -1,3 +1,5 @@
+from io import StringIO
+from json import dumps
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -225,17 +227,17 @@ class DAOWeb:
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2)
 
     def explain(self, smiles, epochs=300):
-        features = ["is_boron", "is_carbon", "is_nitrogen", "is_oxygen", "is_flourine", "is_phosporus", "is_sulfur",
-                    "is_chlorine", "is_bromine", "is_iodine", "is_other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
-                    "four_Hs", "is_s", "is_sp", "is_sp2", "is_sp3", "is_sp3d", "is_sp3d2", "unspecified_hybr",
-                    "is_inring", "is_aromatic", "is_donor", "is_acceptor"]
+        features = ["boron", "carbon", "nitrogen", "oxygen", "flourine", "phosporus", "sulfur",
+                    "chlorine", "bromine", "iodine", "other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
+                    "four_Hs", "s", "sp", "sp2", "sp3", "sp3d", "sp3d2", "unspecified_hybr",
+                    "in_ring", "aromatic", "donor", "acceptor"]
 
         # set seeds for initializing mask in GNN explainer
         manual_seed(0)
         seed(0)
         np.random.seed(0)
 
-        explainer = GNNExplainer(self.model, epochs=epochs, return_type='raw')
+        explainer = GNNExplainer(self.model, epochs=epochs)
         data = self.smiles2graph(smiles)
         data.batch = zeros(data.num_nodes, dtype=long)
         node_feat_mask, edge_mask = explainer.explain_graph(data.x, data.edge_index)
@@ -243,12 +245,13 @@ class DAOWeb:
         # node importance
         node_feat_mask = node_feat_mask.detach().numpy()
         node_feat_importance = pd.DataFrame(data=node_feat_mask[np.newaxis], columns=features, index=[0])
+        print(node_feat_importance)
 
 
         # edge importance
         edge_mask = edge_mask.detach().numpy()
         edge_mask = abs(zscore(edge_mask))
-        highlighted_edges = list((np.where(edge_mask > 1)[0]).astype(object))
+        highlighted_edges = list((np.where(edge_mask >= 1)[0]).astype(object))
         edge_index = data.edge_index.detach().cpu().numpy()
 
         # edge indices contain both direction so we need to drop one and save a copy
@@ -273,16 +276,22 @@ class DAOWeb:
 
         mol = Chem.MolFromSmiles(r'{}'.format(smiles))
         rdDepictor.Compute2DCoords(mol)
-        drawer = rdMolDraw2D.MolDraw2DSVG(400, 200)
+        drawer = rdMolDraw2D.MolDraw2DSVG(400, 400)
         drawer.DrawMolecule(mol, highlightAtoms=[], highlightBonds=bonds_to_highlight)
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace('svg:', '')
         molecule_vis = svg
 
-        fig, ax = plt.subplots()
+        # plt.rcParams['svg.fonttype'] = 'none'
+        px = 1 / plt.rcParams['figure.dpi']
+        fig, ax = plt.subplots(figsize=(200*px, 400*px))
+        #fig.tight_layout()
         ax.set_xlim(0, 1)
-        sns.barplot(data=node_feat_importance, orient='horizontal', ax=ax
-                    )
+        ax.yaxis.label.set_size(60)
+        sns.barplot(data=node_feat_importance, orient='horizontal', ax=ax)
+        img = StringIO()
+        fig.savefig(img, format='svg', bbox_inches = "tight")
+        img = img.getvalue()
 
         """Atom symbols in feature importance
         mol = Chem.MolFromSmiles(r'{}'.format(smiles))
@@ -295,7 +304,7 @@ class DAOWeb:
             symbols.append(mol.GetAtoms()[i].GetSymbol())
         """
 
-        return molecule_vis, 0
+        return molecule_vis, img
 
 
 

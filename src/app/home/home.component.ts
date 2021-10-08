@@ -10,13 +10,14 @@ import {NgForm} from '@angular/forms';
 
 export class HomeComponent implements OnInit {
     @ViewChild('moleculeGraph') moleculeGraph: ElementRef;
-
+    @ViewChild('featuresGraph') featuresGraph: ElementRef;
     public prediction: Prediction;
     public generatedPrediction = false;
     public moleculeSmiles: SmilesInput;
     public explainerRunning = false;
     public explanation: Explanation;
     public generatedExplanation = false;
+    public generatedComplementary = false;
 
     constructor(private predictService: PredictService) {
     }
@@ -41,7 +42,7 @@ export class HomeComponent implements OnInit {
                 this.explainerRunning = false;
                 this.generatedExplanation = true;
                 this.moleculeGraph.nativeElement.innerHTML = this.explanation['graph']
-                console.log(this.explanation.graph)
+                this.featuresGraph.nativeElement.innerHTML = this.explanation['featureImportance']
             },
         );
     }

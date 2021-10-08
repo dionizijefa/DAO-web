@@ -66,8 +66,13 @@
     <button *ngIf="generatedExplanation==false" (click)="onExplain()" class="btn btn-danger btn-block btn-round">Explain predictions</button>
     <mat-progress-spinner *ngIf="explainerRunning==true" mode="indeterminate"></mat-progress-spinner>
     </div>
-    <div #moleculeGraph></div>
     <div *ngIf="generatedExplanation==true">
-        <div #moleculeGraph></div>
+        <h2>GNN explainer</h2>
+    </div>
+    <div class="row">
+    <div class="col-md-6" #moleculeGraph></div>
+    <div class="col-md-6" #featuresGraph></div>
     </div>
 </div>
+
+<div class="container" *ngIF="generatedComplementary"
