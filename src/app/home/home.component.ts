@@ -38,9 +38,9 @@ export class HomeComponent implements OnInit {
     public explain(smilesInput) {
         return this.predictService.explain(smilesInput).subscribe(
             (explanation) => {
+                this.generatedExplanation = true;
                 this.explanation = explanation;
                 this.explainerRunning = false;
-                this.generatedExplanation = true;
                 this.moleculeGraph.nativeElement.innerHTML = this.explanation['graph']
                 this.featuresGraph.nativeElement.innerHTML = this.explanation['featureImportance']
             },
