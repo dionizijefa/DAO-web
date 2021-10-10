@@ -13,3 +13,9 @@ export class Explanation {
     graph: string;
     featureImportance: string;
 }
+
+export class Complementary {
+    prediction: number;
+    tasks: string;
+    force; string
+}

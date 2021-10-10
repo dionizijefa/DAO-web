@@ -1,5 +1,5 @@
+import pickle
 from io import StringIO
-from json import dumps
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -14,9 +14,18 @@ from torch.nn import Sequential, BatchNorm1d, ReLU, Linear, Module, ModuleList
 from torch import load, Tensor, long, zeros, manual_seed
 import seaborn as sns
 from random import seed
+import shap
 
 fdef_name = Path(RDConfig.RDDataDir) / 'BaseFeatures.fdef'
 factory = ChemicalFeatures.BuildFeatureFactory(str(fdef_name))
+
+regression_tasks = ['Caco2_Wang', 'Lipophilicity_AstraZeneca','Solubility_AqSolDB', 'PPBR_AZ', 'VDss_Lombardo',
+                     'Half_Life_Obach', 'Clearance_Hepatocyte_AZ', 'LD50_Zhu']
+classification_tasks = ['HIA_Hou','Pgp_Broccatelli', 'Bioavailability_Ma', 'BBB_Martins', 'CYP2C19_Veith',
+                    'CYP2D6_Veith', 'CYP3A4_Veith', 'CYP1A2_Veith', 'CYP2C9_Veith','CYP2C9_Substrate_CarbonMangels',
+                     'CYP2D6_Substrate_CarbonMangels','CYP3A4_Substrate_CarbonMangels', 'hERG', 'AMES', 'DILI',
+                    'Skin Reaction', 'Carcinogens_Languin','ClinTox','nr-ar', 'nr-ar-lbd', 'nr-ahr', 'nr-aromatase',
+                     'nr-er','nr-er-lbd', 'nr-ppar-gamma', 'sr-are', 'sr-atad5', 'sr-hse', 'sr-mmp','sr-p53']
 
 root = root = Path(__file__).resolve().parents[0].absolute()
 
@@ -245,7 +254,6 @@ class DAOWeb:
         # node importance
         node_feat_mask = node_feat_mask.detach().numpy()
         node_feat_importance = pd.DataFrame(data=node_feat_mask[np.newaxis], columns=features, index=[0])
-        print(node_feat_importance)
 
 
         # edge importance
@@ -290,7 +298,7 @@ class DAOWeb:
         ax.yaxis.label.set_size(60)
         sns.barplot(data=node_feat_importance, orient='horizontal', ax=ax)
         img = StringIO()
-        fig.savefig(img, format='svg', bbox_inches = "tight")
+        fig.savefig(img, format='svg', bbox_inches="tight")
         img = img.getvalue()
 
         """Atom symbols in feature importance
@@ -305,6 +313,63 @@ class DAOWeb:
         """
 
         return molecule_vis, img
+
+    def complementary_model(self, smiles, withdrawn_prob):
+        compl_root = Path(__file__).resolve().parents[1].absolute()
+
+        predictions = []
+        predictions.append(round(withdrawn_prob/100, 2))
+        tasks = ['predict_withdrawn', 'nr-ppar-gamma', 'sr-atad5', 'sr-mmp', 'Bioavailability_Ma']
+
+        data = self.smiles2graph(r'{}'.format(smiles))
+        data.batch = zeros(data.num_nodes, dtype=long)
+
+        for task in tasks[1:]:
+            state_dict = load(compl_root / 'complementary/{}/state_dict.pt'.format(task))
+            hyperparams = state_dict['hyper_parameters']
+            compl_model = EGConvNet(
+                hyperparams['hidden_channels'],
+                hyperparams['num_layers'],
+                hyperparams['num_heads'],
+                hyperparams['num_bases'],
+                aggregator=['sum', 'mean', 'max'])
+            compl_model.load_state_dict(state_dict['state_dict'])
+            compl_model.eval()
+
+            output = compl_model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
+            if task in classification_tasks:
+                output = round(((1 / (1 + np.exp(-output)))), 2)
+            predictions.append(output)
+
+        test_example = pd.DataFrame(columns=tasks, data=[predictions], index=[0])
+
+        xgb_file = open(compl_root / 'complementary/xgb_classifier_reduced.pkl', 'rb')
+        xgb_model = pickle.load(xgb_file)
+        ntree_limit = xgb_model.get_booster().best_ntree_limit
+
+        prediction = xgb_model.predict(test_example, ntree_limit)
+        print(prediction)
+        prediction = int(xgb_model.predict(test_example, ntree_limit=ntree_limit)[0])
+
+        explainer = shap.TreeExplainer(xgb_model)
+        shap_values = explainer.shap_values(test_example)
+
+        img = StringIO()
+        shap.plots.force(
+            explainer.expected_value,
+            shap_values,
+            test_example,
+            link='logit',
+            matplotlib=True,
+            show=False,
+            figsize=(20, 3)
+        )
+        plt.savefig(img, format='svg', bbox_inches="tight")
+        img = img.getvalue()
+
+        return prediction, dict(zip(tasks, predictions)), img
+
+
 
 
 

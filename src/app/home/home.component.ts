@@ -11,6 +11,7 @@ import {NgForm} from '@angular/forms';
 export class HomeComponent implements OnInit {
     @ViewChild('moleculeGraph') moleculeGraph: ElementRef;
     @ViewChild('featuresGraph') featuresGraph: ElementRef;
+    @ViewChild('shapPlot') shapPlot: ElementRef;
     public prediction: Prediction;
     public generatedPrediction = false;
     public moleculeSmiles: SmilesInput;
@@ -18,6 +19,7 @@ export class HomeComponent implements OnInit {
     public explanation: Explanation;
     public generatedExplanation = false;
     public generatedComplementary = false;
+    public complementary;
 
     constructor(private predictService: PredictService) {
     }
@@ -47,6 +49,16 @@ export class HomeComponent implements OnInit {
         );
     }
 
+    public complement(smilesInput, prediction) {
+        return this.predictService.complement(smilesInput, prediction).subscribe(
+            (complementary) => {
+                this.generatedComplementary = true;
+                this.complementary = complementary;
+                this.shapPlot.nativeElement.innerHTML = this.complementary['force']
+            },
+        );
+    }
+
     onSubmit(f: NgForm) {
         this.predict(f.value);
     }
@@ -54,5 +66,9 @@ export class HomeComponent implements OnInit {
     onExplain() {
         this.explainerRunning = true;
         this.explain(this.moleculeSmiles);
+    }
+
+    onComplementary() {
+        this.complement(this.moleculeSmiles, this.prediction['predictedProbability'])
     }
 }

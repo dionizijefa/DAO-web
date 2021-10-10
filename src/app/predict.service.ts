@@ -30,5 +30,13 @@ export class PredictService {
         (res) => res,
     );
   }
+
+  public complement(smilesInput: SmilesInput, prediction: Prediction): Observable<Explanation> {
+    return this.http.post<Explanation>(
+        `${SERVER_URL}complement`, [smilesInput, prediction],
+    ).map(
+        (res) => res,
+    );
+  }
 }
 

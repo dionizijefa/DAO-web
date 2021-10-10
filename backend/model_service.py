@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from model import DAOWeb
+from withdrawn.model import DAOWeb
 
 # declare constants
 HOST = '0.0.0.0'
@@ -31,6 +31,19 @@ def explain():
     return jsonify({
         'graph': graph,
         'featureImportance': feature_importance
+    })
+
+@app.route('/complement', methods=['POST'])
+def complemenet():
+    dao = DAOWeb()
+    input_smiles = request.get_json()[0]['smilesInput']
+    predicted_probability = request.get_json()[1]
+    prediction, tasks, force = dao.complementary_model(input_smiles, predicted_probability)
+
+    return jsonify({
+        'prediction': prediction,
+        'tasks': tasks,
+        'force': force,
     })
 
 
