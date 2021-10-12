@@ -221,6 +221,14 @@ class DAOWeb:
         return Data(x=graph['node_feat'], edge_index=graph['edge_index'], feature_names=names)
 
     def predict(self, smiles):
+
+        mol = Chem.MolFromSmiles(r'{}'.format(smiles))
+        rdDepictor.Compute2DCoords(mol)
+        drawer = rdMolDraw2D.MolDraw2DSVG(400, 200)
+        drawer.DrawMolecule(mol)
+        drawer.FinishDrawing()
+        svg = drawer.GetDrawingText().replace('svg:', '')
+
         data = self.smiles2graph(r'{}'.format(smiles))
         data.batch = zeros(data.num_nodes, dtype=long)
         output = self.model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
@@ -233,9 +241,9 @@ class DAOWeb:
         withdrawn_p_value = (np.searchsorted(withdrawn_calibration, output)) \
                             / (len(withdrawn_calibration) + 1)
 
-        return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2)
+        return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg
 
-    def explain(self, smiles, epochs=300):
+    def explain(self, smiles, epochs=200):
         features = ["boron", "carbon", "nitrogen", "oxygen", "flourine", "phosporus", "sulfur",
                     "chlorine", "bromine", "iodine", "other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
                     "four_Hs", "s", "sp", "sp2", "sp3", "sp3d", "sp3d2", "unspecified_hybr",
@@ -284,7 +292,7 @@ class DAOWeb:
 
         mol = Chem.MolFromSmiles(r'{}'.format(smiles))
         rdDepictor.Compute2DCoords(mol)
-        drawer = rdMolDraw2D.MolDraw2DSVG(400, 400)
+        drawer = rdMolDraw2D.MolDraw2DSVG(400, 200)
         drawer.DrawMolecule(mol, highlightAtoms=[], highlightBonds=bonds_to_highlight)
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace('svg:', '')
@@ -352,19 +360,17 @@ class DAOWeb:
         prediction = int(xgb_model.predict(test_example, ntree_limit=ntree_limit)[0])
 
         explainer = shap.TreeExplainer(xgb_model)
-        shap_values = explainer.shap_values(test_example)
+        shap_values = explainer(test_example)
 
         img = StringIO()
-        shap.plots.force(
+        shap.plots._waterfall.waterfall_legacy(
             explainer.expected_value,
-            shap_values,
-            test_example,
-            link='logit',
-            matplotlib=True,
-            show=False,
-            figsize=(20, 3)
+            shap_values[0].values,
+            test_example.iloc[0],
+            show=False
         )
-        plt.savefig(img, format='svg', bbox_inches="tight")
+        plt.gcf().set_size_inches((2, 1.5))
+        plt.savefig(img, format='svg', bbox_inches='tight')
         img = img.getvalue()
 
         return prediction, dict(zip(tasks, predictions)), img

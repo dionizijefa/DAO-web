@@ -14,12 +14,13 @@ CORS(app)
 def predict():
     dao = DAOWeb()
     input_smiles = request.get_json()['smilesInput']
-    probability, predicted_class, approved_p, withdrawn_p = dao.predict(input_smiles)
+    probability, predicted_class, approved_p, withdrawn_p, molecule_vis = dao.predict(input_smiles)
 
     return jsonify({'predictedProbability': probability,
                     'predictedClass': predicted_class,
                     'approvedP': approved_p,
-                    'withdrawnP': withdrawn_p})
+                    'withdrawnP': withdrawn_p,
+                   'moleculeVis': molecule_vis})
 
 
 @app.route('/explain', methods=['POST'])
@@ -34,7 +35,7 @@ def explain():
     })
 
 @app.route('/complement', methods=['POST'])
-def complemenet():
+def complement():
     dao = DAOWeb()
     input_smiles = request.get_json()[0]['smilesInput']
     predicted_probability = request.get_json()[1]

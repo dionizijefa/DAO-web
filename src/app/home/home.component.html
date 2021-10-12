@@ -3,86 +3,134 @@
         <div class="filter"></div>
     </div>
 </div>
-
-<div class="container" *ngIf=!generatedPrediction>
-    <div class="row">
-          <div class="col-md-4">
-              <h3 class="title mx-auto">Predict approved or withdrawn status of your drugs</h3>
-          </div>
-          <div class="col-md-4">
-              <form #f="ngForm" class="register-form" (ngSubmit) = "onSubmit(f)">
-                    <div class="input-group bg-danger">
+<div class="section" *ngIf=!prediction style="padding-top: 20px">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mr-auto ml-auto justify-content-center">
+                    <h3 class="title mx-auto">Predict the possibility of your drug being withdrawn from the market</h3>
+                    <form #f="ngForm" class="register-form" (ngSubmit) = "onSubmit(f)">
+                    <div class="input-group bg-danger" style="margin-bottom: 10px">
                       <input type="text" class="form-control" name="smilesInput" ngModel required
                              #first="ngModel" placeholder="SMILES">
                     </div>
-                <button class="btn btn-danger btn-block btn-round">Predict</button>
-              </form>
+                    <button class="btn btn-danger btn-block btn-round"
+                            style="width:50%; left:50%; margin:0 auto;">Predict</button>
+                    </form>
+                </div>
             </div>
         </div>
-    <div class="row">
-        <p>Try example molecules</p>
-        <div class="row">
-        <div class="col-md-4">
-            <a> <img src="assets/img/ivermectin.png" width="200" height="100"
+        <div class="container" style="margin-top: 20px">
+            <div class="row justify-content-lg-start">
+                <div class="col-md-6 mr-auto ml-auto justify-content-center">
+               <h5>Try these molecules: </h5>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-xs-8 text-center">
+                    <a> <img src="assets/img/ivermectin.png" width="200" height="100"
             (click)="predict({'smilesInput': 'CCC(C)C1C(CCC2(O1)CC3CC(O2)CC=C(C(C(C=CC=C4COC5C4(C(C=C(C5O)C)C(=O)O3)O)C)OC6CC(C(C(O6)C)OC7CC(C(C(O7)C)O)OC)OC)C)C'})">
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a> <img src="assets/img/molnupiravir.png" width="200" height="100"
-            (click)="predict({'smilesInput': 'CC(C)C(=O)OC[C@H]1O[C@H]([C@H](O)[C@@H]1O)N2C=C\\C(=N\\O)\\NC2=O'})">
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a> <img src="assets/img/thalidomide.png" width="200" height="100"
-            (click)="predict({'smilesInput': 'O=C3CCC(N2C(=O)c1ccccc1C2=O)C(=O)N3'})">
-            </a>
-        </div>
+                    </a>
+                    <p>Ivermectin</p>
+                </div>
+                <div class="col-xs-8 text-center">
+                    <a> <img src="assets/img/molnupiravir.png" width="200" height="100"
+                    (click)="predict({'smilesInput': 'CC(C)C(=O)OC[C@H]1O[C@H]([C@H](O)[C@@H]1O)N2C=C\\C(=N\\O)\\NC2=O'})">
+                    </a>
+                    <p>Molnupiravir</p>
+                </div>
+                <div class="col-xs-8 text-center">
+                    <a> <img src="assets/img/thalidomide.png" width="200" height="100"
+                    (click)="predict({'smilesInput': 'O=C3CCC(N2C(=O)c1ccccc1C2=O)C(=O)N3'});">
+                    </a>
+                    <p>Thalidomide</p>
+                </div>
             </div>
-    </div>
+        </div>
 </div>
 
-<div class="container" *ngIf=generatedPrediction>
-    <div class="col-lg-12">
-            <h3>Drug Attrition Oracle - Prediction and explanation</h3>
-            <p>Probability of molecule being withdrawn class {{prediction['predictedProbability']}}%</p>
-            <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
-            class="cold-md-4 ml-auto mr-auto">
+<div class="section">
+    <div class="container">
+        <div class="row justify-content-center"  *ngIf="prediction">
+            <h3>Drug Attrition Oracle - Conformal prediction</h3>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 20px">
+            <div class="col-md-4">
+                <div class="row" *ngIf="prediction">
+                    <p>Molecule smiles:</p>
+                    <p>{{moleculeSmiles.smilesInput}}</p>
+                </div>
+                <div class="row">
+                    <p *ngIf="prediction">Molecule structure<p>
+                    <div #moleculeVis></div>
+                </div>
             </div>
-            <ng-template #thenTemplate>
+            <div class="col-md-4"  *ngIf="prediction">
+                <p>Probability of molecule being withdrawn class</p>
+                <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
+                class="cold-md-4 ml-auto mr-auto">
+                </div>
+                <ng-template #thenTemplate>
                 <p><ngb-progressbar type="success" [value]="prediction['predictedProbability']"
-                      [max]="100"></ngb-progressbar></p>
-            </ng-template>
-            <ng-template #elseTemplate>
+                      [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar></p>
+                </ng-template>
+                <ng-template #elseTemplate>
                 <p><ngb-progressbar type="danger" [value]="prediction['predictedProbability']"
                                       [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar></p>
-            </ng-template>
-            <p>P value approved {{prediction['approvedP']}}</p>
-            <p><ngb-progressbar type="secondary" [value]="prediction['approvedP']"
+                </ng-template>
+                <p>P value approved</p>
+                <p><ngb-progressbar type="secondary" [value]="prediction['approvedP']"
                       [max]="1">{{prediction['approvedP']}}</ngb-progressbar></p>
-            <p>P value withdrawn {{prediction['withdrawnP']}}</p>
-        <p><ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
+                <p>P value withdrawn</p>
+                <p><ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
                       [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar></p>
-            <p>Predicted class {{prediction['predictedClass']}}</p>
-    <button *ngIf="generatedExplanation==false"
-            (click)="onExplain()" class="btn btn-danger btn-block btn-round">Explain predictions</button>
-    <mat-progress-spinner *ngIf="explainerRunning==true" mode="indeterminate"></mat-progress-spinner>
-    </div>
-    <div *ngIf="generatedExplanation==true">
-        <h2>GNN explainer</h2>
-    </div>
-    <div class="row">
-    <div class="col-md-6" #moleculeGraph></div>
-    <div class="col-md-6" #featuresGraph></div>
-    </div>
-    <div class="row">
-    <button *ngIf="generatedComplementary==false"
-            (click)="onComplementary()" class="btn btn-danger btn-block btn-round">Complementary model</button>
-    </div>
-</div>
+                <p>Predicted class: {{prediction.predictedClass == 1 ? 'Withdrawn' : (prediction.predictedClass == 0 ? 'Approved' : '')}}</p>
 
-<div class="container">
-    <div class="col-lg-12" *ngIf=generatedComplementary>>
-        <p>Complementary model prediction: {{complementary['prediction']}}</p>
+            </div>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 20px">
+            <div class="col-md-4" *ngIf="explainerRunning; then explainSpinner; else explainButton">
+            </div>
+            <ng-template #explainButton>
+                <div class="col-md-4">
+                <button *ngIf="prediction && generatedExplanation==false"
+                (click)="onExplain()" class="btn btn-danger btn-block btn-round">Explain predictions</button>
+                </div>
+            </ng-template>
+            <ng-template #explainSpinner>
+                <div class="col-md-4 justify-content-center">
+                <mat-progress-spinner *ngIf="explainerRunning==true"
+                                      style="margin:0 auto;" mode="indeterminate" [color]="'warn'" [diameter]="40"></mat-progress-spinner>
+                </div>
+            </ng-template>
+            <div class="col-md-4 justify-content-center"
+             *ngIf="prediction && complementaryRunning==false && generatedComplementary==false">
+            <button (click)="onComplementary()" class="btn btn-danger btn-block btn-round">Complementary model</button>
+            </div>
+            <div class="col-md-4 justify-content-center"
+            *ngIf="prediction && complementaryRunning==true && generatedComplementary==false">
+            <mat-progress-spinner style="margin:0 auto;" mode="indeterminate" [color]="'warn'" [diameter]="40"></mat-progress-spinner>
+            </div>
+        </div>
+    <div class="row">
+    <div class="col-lg-4 ml-auto mr-auto">
+        <h4 *ngIf="generatedExplanation==true" style="margin-botton: 20px">GNN explainer</h4>
+        <div class="row">
+           <p *ngIf="generatedExplanation==true">Highlighted edges are part of computation graphs that are most influential for the model's predictions.
+               Edges that have an absolute z-score greater than one are highlighted</p>
+        <div #moleculeGraph></div>
+        </div>
+        <div class="row">
+           <p *ngIf="generatedExplanation==true">Node features that are most influential for the model's prediction.</p>
+        <div #featuresGraph></div>
+        </div>
+    </div>
+    <div class="col-lg-4 ml-auto mr-auto">
+        <div *ngIf="generatedComplementary==true">
+        <h4 *ngIf="generatedComplementary==true" style="margin-botton: 20px">Complementary model</h4>
+            <p>Complementary model predicts additional ADME and TOX properties of your molecules. These predictions
+            are used as features in an XGBoost classification model which increases the performance of the baseline
+            model, however, it provides no statistical guarantees.</p>
+            <p>Complementary model prediction: {{complementary['prediction']}}</p>
         <p>Bioavailability</p>
         <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['Bioavailability_Ma']"
                       [max]="1">{{complementary['tasks']['Bioavailability_Ma']}}</ngb-progressbar></p>
@@ -95,6 +143,14 @@
         <p>SR-MMP</p>
         <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-mmp']"
                       [max]="1">{{complementary['tasks']['sr-mmp']}}</ngb-progressbar></p>
+        </div>
+    <div class="row justify-content-center" style="margin-top: 20px">
+        <p *ngIf="generatedComplementary">Waterfall plot of SHAP values for the variables of the complementary model.
+        Red bar describes by how much each variable changes the log-odds ratio to classify the molecule as withdrawn.</p>
+        <p *ngif="generatedComplementary">Variables in blue bars push the log-odds ratio to classify the molecule as approved.</p>
+        <div #shapPlot></div>
     </div>
-    <div #shapPlot></div>
+    </div>
+    </div>
+</div>
 </div>

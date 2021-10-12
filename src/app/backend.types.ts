@@ -7,6 +7,7 @@ export class Prediction {
     approvedP: number;
     withdrawnP: number;
     predictedClass: number;
+    moleculeVis: string;
 }
 
 export class Explanation {
