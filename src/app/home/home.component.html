@@ -132,17 +132,17 @@
             model, however, it provides no statistical guarantees.</p>
             <p>Complementary model prediction: {{complementary['prediction']}}</p>
         <p>Bioavailability</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['Bioavailability_Ma']"
-                      [max]="1">{{complementary['tasks']['Bioavailability_Ma']}}</ngb-progressbar></p>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['Bioavailability_Ma']*100"
+                      [max]="100">{{complementary['tasks']['Bioavailability_Ma']*100}}%</ngb-progressbar></p>
         <p>Peroxisome proliferator-activated receptor gamma</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['nr-ppar-gamma']"
-                      [max]="1">{{complementary['tasks']['nr-ppar-gamma']}}</ngb-progressbar></p>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['nr-ppar-gamma']*100"
+                      [max]="100">{{complementary['tasks']['nr-ppar-gamma']*100}}%</ngb-progressbar></p>
         <p>Genotoxicity SR-ATAD5</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-atad5']"
-                      [max]="1">{{complementary['tasks']['sr-atad5']}}</ngb-progressbar></p>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-atad5']*100"
+                      [max]="100">{{complementary['tasks']['sr-atad5']*100}}%</ngb-progressbar></p>
         <p>SR-MMP</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-mmp']"
-                      [max]="1">{{complementary['tasks']['sr-mmp']}}</ngb-progressbar></p>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-mmp']*100"
+                      [max]="100">{{complementary['tasks']['sr-mmp']*100}}%</ngb-progressbar></p>
         </div>
     <div class="row justify-content-center" style="margin-top: 20px">
         <p *ngIf="generatedComplementary">Waterfall plot of SHAP values for the variables of the complementary model.

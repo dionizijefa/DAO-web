@@ -8,7 +8,7 @@ import {NgForm} from '@angular/forms';
     styleUrls: ['./home.component.scss']
 })
 
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit {
     @ViewChild('moleculeVis') moleculeVis: ElementRef;
     @ViewChild('moleculeGraph') moleculeGraph: ElementRef;
     @ViewChild('featuresGraph') featuresGraph: ElementRef;
@@ -26,9 +26,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-    }
-
-    ngAfterViewInit() {
+        // console.log(this.moleculeVis)
     }
 
     public predict(smilesInput) {

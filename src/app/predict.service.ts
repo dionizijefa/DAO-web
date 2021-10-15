@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Explanation, Prediction, SmilesInput} from './backend.types';
+import {Complementary, Explanation, Prediction, SmilesInput} from './backend.types';
 import {Observable} from 'rxjs';
 import 'rxjs/add/operator/map'
 
@@ -31,8 +31,8 @@ export class PredictService {
     );
   }
 
-  public complement(smilesInput: SmilesInput, prediction: Prediction): Observable<Explanation> {
-    return this.http.post<Explanation>(
+  public complement(smilesInput: SmilesInput, prediction: Prediction): Observable<Complementary> {
+    return this.http.post<Complementary>(
         `${SERVER_URL}complement`, [smilesInput, prediction],
     ).map(
         (res) => res,
