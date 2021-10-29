@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from withdrawn.model import DAOWeb
+from standardiser import standardise
 
 # declare constants
 HOST = '0.0.0.0'
@@ -14,13 +15,15 @@ CORS(app)
 def predict():
     dao = DAOWeb()
     input_smiles = request.get_json()['smilesInput']
-    probability, predicted_class, approved_p, withdrawn_p, molecule_vis = dao.predict(input_smiles)
+    probability, predicted_class, approved_p, withdrawn_p, molecule_vis, qed_prop, similarities = dao.predict(input_smiles)
 
     return jsonify({'predictedProbability': probability,
                     'predictedClass': predicted_class,
                     'approvedP': approved_p,
                     'withdrawnP': withdrawn_p,
-                   'moleculeVis': molecule_vis})
+                    'moleculeVis': molecule_vis,
+                    'qedProp': qed_prop,
+                    'similarities': similarities})
 
 
 @app.route('/explain', methods=['POST'])
@@ -33,6 +36,7 @@ def explain():
         'graph': graph,
         'featureImportance': feature_importance
     })
+
 
 @app.route('/complement', methods=['POST'])
 def complement():
@@ -49,4 +53,6 @@ def complement():
 
 
 if __name__ == '__main__':
-    app.run(host=HOST, debug=True, port=PORT)
+    app.run(
+        host=HOST, debug=True, port=PORT
+    )

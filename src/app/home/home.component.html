@@ -54,7 +54,7 @@
             <h3>Drug Attrition Oracle - Conformal prediction</h3>
         </div>
         <div class="row justify-content-center" style="margin-top: 20px">
-            <div class="col-md-4">
+            <div class="col-md-4" style="margin-right: 10px">
                 <div class="row" *ngIf="prediction">
                     <p>Molecule smiles:</p>
                     <p>{{moleculeSmiles.smilesInput}}</p>
@@ -64,7 +64,23 @@
                     <div #moleculeVis></div>
                 </div>
             </div>
-            <div class="col-md-4"  *ngIf="prediction">
+            <div class="col-md-4 justify-content-center"  *ngIf="prediction" style="margin-left: 10px">
+                <div *ngIf="prediction.predictedClass==1" style="color: #f33816">
+                    <div class="row justify-content-center">
+                    <h3>Withdrawn!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-simple-remove" style="font-size: 100px"></i>
+                    </div>
+                </div>
+                <div *ngIf="prediction.predictedClass==0" style="color: #86d9ab">
+                    <div class="row justify-content-center">
+                    <h3>Approved!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
+                    </div>
+                </div>
                 <p>Probability of molecule being withdrawn class</p>
                 <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
                 class="cold-md-4 ml-auto mr-auto">
@@ -83,8 +99,105 @@
                 <p>P value withdrawn</p>
                 <p><ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
                       [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar></p>
-                <p>Predicted class: {{prediction.predictedClass == 1 ? 'Withdrawn' : (prediction.predictedClass == 0 ? 'Approved' : '')}}</p>
-
+            </div>
+            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
+                <p>Quantitative estimation of drug-likeness</p>
+                <table class="table table-striped" *ngIf="prediction">
+                  <thead>
+                  <tr>
+                    <th scope="col">QED: {{ prediction['qedProp']['QED'] }}%</th>
+                    <th scope="col"></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>Molecular Weight: {{ prediction['qedProp']['MW'] }}</td>
+                    <td>ALogP: {{ prediction['qedProp']['ALOGP'] }}</td>
+                  </tr>
+                  <tr>
+                    <td>Aromatic Rings: {{ prediction['qedProp']['AROM'] }}</td>
+                    <td>Hydrogen Bond Donors: {{ prediction['qedProp']['HBD'] }}</td>
+                  </tr>
+                  <tr>
+                    <td>Hydrogen Bond Acceptors: {{ prediction['qedProp']['HBA'] }}</td>
+                    <td>Alerts: {{ prediction['qedProp']['ALERTS'] }}</td>
+                  </tr>
+                  <tr>
+                    <td>Rotatable Bonds: {{ prediction['qedProp']['ROTB'] }}</td>
+                    <td>Polar Surface Area: {{ prediction['qedProp']['PSA'] }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+            </div>
+            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
+                <p>Tanimoto similarity to other drugs and ATC groups</p>
+                <table class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th scope="col">Withdrawn molecules</th>
+                    <th scope="col">Tanimoto similarity</th>
+                    <th scope="col">ATC codes</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][0] }}/"
+                           target="_blank" rel="noopener">
+                        {{ prediction['similarities']['wd_similarity']['name'][0] }}</a></td>
+                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][0] }}</td>
+                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][0] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][1] }}/"
+                           target="_blank" rel="noopener">
+                        {{ prediction['similarities']['wd_similarity']['name'][1] }}</a></td>
+                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][1] }}</td>
+                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][1] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][2] }}/"
+                           target="_blank" rel="noopener">
+                        {{ prediction['similarities']['wd_similarity']['name'][2] }}</a></td>
+                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][2] }}</td>
+                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][2] }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+            </div>
+            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
+                <p>Tanimoto similarity to other drugs and ATC groups</p>
+                <table class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th scope="col">Approved molecules</th>
+                    <th scope="col">Tanimoto similarity</th>
+                    <th scope="col">ATC codes</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][0] }}/"
+                           target="_blank" rel="noopener">
+                        {{ prediction['similarities']['ad_similarity']['name'][0] }}</a></td>
+                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][0] }}</td>
+                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][0] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][1] }}/"
+                           target="_blank" rel="noopener">
+                        {{ prediction['similarities']['ad_similarity']['name'][1] }}</a></td>
+                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][1] }}</td>
+                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][1] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][2] }}/"
+                           target="_blank" rel="noopener">
+                        {{ prediction['similarities']['ad_similarity']['name'][2] }}</a></td>
+                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][2] }}</td>
+                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][2] }}</td>
+                  </tr>
+                  </tbody>
+                </table>
             </div>
         </div>
         <div class="row justify-content-center" style="margin-top: 20px">
@@ -148,7 +261,7 @@
         <p *ngIf="generatedComplementary">Waterfall plot of SHAP values for the variables of the complementary model.
         Red bar describes by how much each variable changes the log-odds ratio to classify the molecule as withdrawn.</p>
         <p *ngif="generatedComplementary">Variables in blue bars push the log-odds ratio to classify the molecule as approved.</p>
-        <div #shapPlot></div>
+    <div #shap></div>
     </div>
     </div>
     </div>

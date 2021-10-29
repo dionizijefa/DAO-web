@@ -8,6 +8,8 @@ export class Prediction {
     withdrawnP: number;
     predictedClass: number;
     moleculeVis: string;
+    qedProp: string;
+    similarities: string;
 }
 
 export class Explanation {

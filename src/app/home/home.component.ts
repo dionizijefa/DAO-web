@@ -2,6 +2,7 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewChildren} f
 import {Explanation, Prediction, SmilesInput} from '../backend.types';
 import {PredictService} from '../predict.service';
 import {NgForm} from '@angular/forms';
+import {NONE_TYPE} from "@angular/compiler";
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -12,7 +13,7 @@ export class HomeComponent implements OnInit {
     @ViewChild('moleculeVis') moleculeVis: ElementRef;
     @ViewChild('moleculeGraph') moleculeGraph: ElementRef;
     @ViewChild('featuresGraph') featuresGraph: ElementRef;
-    @ViewChild('shapPlot') shapPlot: ElementRef;
+    @ViewChild('shap') shap: ElementRef;
     public prediction: Prediction;
     public moleculeSmiles: SmilesInput;
     public explainerRunning = false;
@@ -35,6 +36,7 @@ export class HomeComponent implements OnInit {
             (prediction) => {
                 this.prediction = prediction;
                 this.moleculeVis.nativeElement.innerHTML = this.prediction['moleculeVis']
+                console.log(this.prediction['similarities'])
             },
         );
     }
@@ -56,7 +58,7 @@ export class HomeComponent implements OnInit {
             (complementary) => {
                 this.generatedComplementary = true;
                 this.complementary = complementary;
-                this.shapPlot.nativeElement.innerHTML = this.complementary['force']
+                this.shap.nativeElement.innerHTML = this.complementary['force']
                 this.complementaryRunning = false;
             },
         );

@@ -3,9 +3,11 @@ from io import StringIO
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from standardiser import standardise
 from matplotlib import pyplot as plt
-from rdkit import Chem, RDConfig
-from rdkit.Chem import HybridizationType, ChemicalFeatures, rdDepictor
+from rdkit import RDConfig, DataStructs
+from rdkit.Chem import HybridizationType, ChemicalFeatures, rdDepictor, MolFromSmiles
+from rdkit.Chem.AllChem import GetMorganFingerprintAsBitVect
 from rdkit.Chem.Draw import rdMolDraw2D
 from scipy.stats import zscore
 from torch_geometric.data import Data
@@ -15,6 +17,7 @@ from torch import load, Tensor, long, zeros, manual_seed
 import seaborn as sns
 from random import seed
 import shap
+from rdkit.Chem import QED
 
 fdef_name = Path(RDConfig.RDDataDir) / 'BaseFeatures.fdef'
 factory = ChemicalFeatures.BuildFeatureFactory(str(fdef_name))
@@ -101,7 +104,7 @@ class DAOWeb:
         :return: graph object
         """
 
-        mol = Chem.MolFromSmiles(r'{}'.format(data))
+        mol = MolFromSmiles(r'{}'.format(data))
 
         """
         if 'descriptors' in kwargs:
@@ -222,13 +225,14 @@ class DAOWeb:
 
     def predict(self, smiles):
 
-        mol = Chem.MolFromSmiles(r'{}'.format(smiles))
+        mol = MolFromSmiles(r'{}'.format(smiles))
         rdDepictor.Compute2DCoords(mol)
         drawer = rdMolDraw2D.MolDraw2DSVG(400, 200)
         drawer.DrawMolecule(mol)
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace('svg:', '')
 
+        #smiles = standardise.run(r'{}'.format(smiles))
         data = self.smiles2graph(r'{}'.format(smiles))
         data.batch = zeros(data.num_nodes, dtype=long)
         output = self.model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
@@ -240,8 +244,98 @@ class DAOWeb:
                            / (len(approved_calibration) + 1)
         withdrawn_p_value = (np.searchsorted(withdrawn_calibration, output)) \
                             / (len(withdrawn_calibration) + 1)
+        qed_prop = QED.properties(mol)
+        qed = QED.default(mol)
 
-        return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg
+        qed_prop = {
+            'MW': round(qed_prop[0], 2),
+            'ALOGP': round(qed_prop[1], 2),
+            'HBA': qed_prop[2],
+            'HBD': qed_prop[3],
+            'PSA': round(qed_prop[4], 2),
+            'ROTB': qed_prop[5],
+            'AROM': qed_prop[6],
+            'ALERTS': qed_prop[7],
+            'QED': round(qed*100, 2),
+        }
+        
+        data = pd.read_csv('./master_web.csv', index_col=0)
+        mols = [MolFromSmiles(i) for i in data['standardized_smiles']]
+        fps = [GetMorganFingerprintAsBitVect(mol, 2, 1024) for mol in mols]
+        query = GetMorganFingerprintAsBitVect(mol, 2, 1024)
+        sims = np.array(DataStructs.BulkTanimotoSimilarity(query, fps))
+        data['query_similarity'] = sims
+        wd_sim = data.loc[data['wd_consensus_1'] == 1].sort_values(by='query_similarity', ascending=False)[:3]
+        ad_sim = data.loc[data['wd_consensus_1'] == 0].sort_values(by='query_similarity', ascending=False)[:3]
+
+        wd_sim_dict = {
+            'chembl_id': [
+                wd_sim.iloc[0]['chembl_id'], wd_sim.iloc[1]['chembl_id'], wd_sim.iloc[2]['chembl_id']
+            ],
+            'atc_code': [
+                wd_sim.iloc[0]['atc_code'], wd_sim.iloc[1]['atc_code'], wd_sim.iloc[2]['atc_code']
+            ],
+            'tanimoto_similarity': [
+                round(wd_sim.iloc[0]['query_similarity'], 2),
+                round(wd_sim.iloc[1]['query_similarity'], 2),
+                round(wd_sim.iloc[2]['query_similarity'], 2)
+            ],
+            'name': [
+                wd_sim.iloc[0]['name'], wd_sim.iloc[1]['name'], wd_sim.iloc[2]['name']
+            ]
+        }
+
+        ad_sim_dict = {
+            'chembl_id': [
+                ad_sim.iloc[0]['chembl_id'], ad_sim.iloc[1]['chembl_id'], ad_sim.iloc[2]['chembl_id']
+            ],
+            'atc_code': [
+                ad_sim.iloc[0]['atc_code'], ad_sim.iloc[1]['atc_code'], ad_sim.iloc[2]['atc_code']
+            ],
+            'tanimoto_similarity': [
+                round(ad_sim.iloc[0]['query_similarity'], 2),
+                round(ad_sim.iloc[1]['query_similarity'], 2),
+                round(ad_sim.iloc[2]['query_similarity'], 2)
+            ],
+            'name': [
+                ad_sim.iloc[0]['name'], ad_sim.iloc[1]['name'], ad_sim.iloc[2]['name']
+            ]
+        }
+
+        # calculate similarity to second level ATC codes
+        data['atc_code'] = data['atc_code'].str.split(',')
+        data = data.explode('atc_code')
+        data = data.loc[data['atc_code'] != 'None']
+        data['atc_code'] = data['atc_code'].str.rstrip(' ').str.lstrip(' ')
+        data['atc_code'] = data['atc_code'].str[:3]
+        hue = []
+        fingerprints = []
+        for i in data['atc_code'].unique():
+            disease = data.loc[data['atc_code'] == i]['standardized_smiles']
+            interim_fps = []
+            for j in disease:
+                mol = MolFromSmiles(j)
+                fp = GetMorganFingerprintAsBitVect(mol, 2, nBits=1024)
+                interim_fps.append(fp)
+            fingerprints.append(interim_fps)
+            hue.append(i)
+        disease_dict = dict(zip(hue, fingerprints))
+        results = dict()
+        for i in disease_dict:
+            similarity = []
+            for mol in disease_dict[i]:
+                similarity.append(DataStructs.FingerprintSimilarity(mol, query))
+            results[i] = np.mean(similarity)
+        results = pd.DataFrame(results, index=[0]).transpose().sort_values(0, ascending=False).reset_index()[:3]
+        sim_atc = {
+            '0': [results.iloc[0]['index'], results.iloc[0][0]],
+            '1': [results.iloc[1]['index'], results.iloc[1][0]],
+            '2': [results.iloc[2]['index'], results.iloc[2][0]],
+        }
+
+        similarities = {'wd_similarity': wd_sim_dict, 'ad_similarity': ad_sim_dict, 'atc_similarity': sim_atc}
+
+        return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, similarities
 
     def explain(self, smiles, epochs=200):
         features = ["boron", "carbon", "nitrogen", "oxygen", "flourine", "phosporus", "sulfur",
@@ -290,7 +384,7 @@ class DAOWeb:
             if bond in reverse:
                 bonds_to_highlight.append(i)
 
-        mol = Chem.MolFromSmiles(r'{}'.format(smiles))
+        mol = MolFromSmiles(r'{}'.format(smiles))
         rdDepictor.Compute2DCoords(mol)
         drawer = rdMolDraw2D.MolDraw2DSVG(400, 200)
         drawer.DrawMolecule(mol, highlightAtoms=[], highlightBonds=bonds_to_highlight)
@@ -355,8 +449,6 @@ class DAOWeb:
         xgb_model = pickle.load(xgb_file)
         ntree_limit = xgb_model.get_booster().best_ntree_limit
 
-        prediction = xgb_model.predict(test_example, ntree_limit)
-        print(prediction)
         prediction = int(xgb_model.predict(test_example, ntree_limit=ntree_limit)[0])
 
         explainer = shap.TreeExplainer(xgb_model)
@@ -369,7 +461,7 @@ class DAOWeb:
             test_example.iloc[0],
             show=False
         )
-        plt.gcf().set_size_inches((2, 1.5))
+        plt.gcf().set_size_inches((3, 4))
         plt.savefig(img, format='svg', bbox_inches='tight')
         img = img.getvalue()
 
