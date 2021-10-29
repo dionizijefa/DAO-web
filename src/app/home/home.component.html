@@ -199,6 +199,31 @@
                   </tbody>
                 </table>
             </div>
+            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
+                <p>Average Tanimoto similarity to molecules of specific ATC codes</p>
+                <table class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th scope="col">ATC code</th>
+                    <th scope="col">Tanimoto similarity</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>{{ prediction['similarities']['atc_similarity'][0][0] }}</td>
+                    <td>{{ prediction['similarities']['atc_similarity'][0][1] }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ prediction['similarities']['atc_similarity'][1][0] }}</td>
+                    <td>{{ prediction['similarities']['atc_similarity'][1][1] }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ prediction['similarities']['atc_similarity'][2][0] }}</td>
+                    <td>{{ prediction['similarities']['atc_similarity'][2][1] }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+            </div>
         </div>
         <div class="row justify-content-center" style="margin-top: 20px">
             <div class="col-md-4" *ngIf="explainerRunning; then explainSpinner; else explainButton">

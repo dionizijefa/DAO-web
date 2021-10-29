@@ -328,9 +328,9 @@ class DAOWeb:
             results[i] = np.mean(similarity)
         results = pd.DataFrame(results, index=[0]).transpose().sort_values(0, ascending=False).reset_index()[:3]
         sim_atc = {
-            '0': [results.iloc[0]['index'], results.iloc[0][0]],
-            '1': [results.iloc[1]['index'], results.iloc[1][0]],
-            '2': [results.iloc[2]['index'], results.iloc[2][0]],
+            '0': [results.iloc[0]['index'], round(results.iloc[0][0], 2)], #0 is the column name
+            '1': [results.iloc[1]['index'], round(results.iloc[1][0], 2)],
+            '2': [results.iloc[2]['index'], round(results.iloc[2][0], 2)],
         }
 
         similarities = {'wd_similarity': wd_sim_dict, 'ad_similarity': ad_sim_dict, 'atc_similarity': sim_atc}
