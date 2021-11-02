@@ -244,6 +244,7 @@ class DAOWeb:
                            / (len(approved_calibration) + 1)
         withdrawn_p_value = (np.searchsorted(withdrawn_calibration, output)) \
                             / (len(withdrawn_calibration) + 1)
+
         qed_prop = QED.properties(mol)
         qed = QED.default(mol)
 
@@ -258,6 +259,7 @@ class DAOWeb:
             'ALERTS': qed_prop[7],
             'QED': round(qed*100, 2),
         }
+        """
         
         data = pd.read_csv('./master_web.csv', index_col=0)
         mols = [MolFromSmiles(i) for i in data['standardized_smiles']]
@@ -334,10 +336,12 @@ class DAOWeb:
         }
 
         similarities = {'wd_similarity': wd_sim_dict, 'ad_similarity': ad_sim_dict, 'atc_similarity': sim_atc}
-
+        
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, similarities
+        """
+        return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, 1
 
-    def explain(self, smiles, epochs=200):
+    def explain(self, smiles, epochs=1):
         features = ["boron", "carbon", "nitrogen", "oxygen", "flourine", "phosporus", "sulfur",
                     "chlorine", "bromine", "iodine", "other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
                     "four_Hs", "s", "sp", "sp2", "sp3", "sp3d", "sp3d2", "unspecified_hybr",
@@ -454,7 +458,7 @@ class DAOWeb:
         explainer = shap.TreeExplainer(xgb_model)
         shap_values = explainer(test_example)
 
-        img = StringIO()
+        waterfall = StringIO()
         shap.plots._waterfall.waterfall_legacy(
             explainer.expected_value,
             shap_values[0].values,
@@ -462,10 +466,10 @@ class DAOWeb:
             show=False
         )
         plt.gcf().set_size_inches((3, 4))
-        plt.savefig(img, format='svg', bbox_inches='tight')
-        img = img.getvalue()
+        plt.savefig(waterfall, format='svg', bbox_inches='tight')
+        waterfall = waterfall.getvalue()
 
-        return prediction, dict(zip(tasks, predictions)), img
+        return prediction, dict(zip(tasks, predictions)), waterfall
 
 
 

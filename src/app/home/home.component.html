@@ -1,5 +1,6 @@
 <div class="wrapper">
-    <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('../../assets/img/landing.jpeg');">
+    <div class="page-header page-header-xs" data-parallax="true"
+         style="background-image: url('../../assets/img/landing.jpg');">
         <div class="filter"></div>
     </div>
 </div>
@@ -7,7 +8,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 mr-auto ml-auto justify-content-center">
-                    <h3 class="title mx-auto">Predict the possibility of your drug being withdrawn from the market</h3>
+                    <h3 class="title mx-auto">Predict the probability of your drug being withdrawn from the market</h3>
                     <form #f="ngForm" class="register-form" (ngSubmit) = "onSubmit(f)">
                     <div class="input-group bg-danger" style="margin-bottom: 10px">
                       <input type="text" class="form-control" name="smilesInput" ngModel required
@@ -56,11 +57,11 @@
         <div class="row justify-content-center" style="margin-top: 20px">
             <div class="col-md-4" style="margin-right: 10px">
                 <div class="row" *ngIf="prediction">
-                    <p>Molecule smiles:</p>
+                    <h5>Molecule smiles:</h5>
                     <p>{{moleculeSmiles.smilesInput}}</p>
                 </div>
                 <div class="row">
-                    <p *ngIf="prediction">Molecule structure<p>
+                    <h5 *ngIf="prediction">Molecule structure</h5>
                     <div #moleculeVis></div>
                 </div>
             </div>
@@ -81,7 +82,7 @@
                     <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
                     </div>
                 </div>
-                <p>Probability of molecule being withdrawn class</p>
+                <h5>Probability of molecule being withdrawn class</h5>
                 <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
                 class="cold-md-4 ml-auto mr-auto">
                 </div>
@@ -93,15 +94,15 @@
                 <p><ngb-progressbar type="danger" [value]="prediction['predictedProbability']"
                                       [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar></p>
                 </ng-template>
-                <p>P value approved</p>
+                <h5>P value approved</h5>
                 <p><ngb-progressbar type="secondary" [value]="prediction['approvedP']"
                       [max]="1">{{prediction['approvedP']}}</ngb-progressbar></p>
-                <p>P value withdrawn</p>
+                <h5>P value withdrawn</h5>
                 <p><ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
                       [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar></p>
             </div>
             <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
-                <p>Quantitative estimation of drug-likeness</p>
+                <h5>Quantitative estimation of drug-likeness</h5>
                 <table class="table table-striped" *ngIf="prediction">
                   <thead>
                   <tr>
@@ -129,101 +130,101 @@
                   </tbody>
                 </table>
             </div>
-            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
-                <p>Tanimoto similarity to other drugs and ATC groups</p>
-                <table class="table table-striped">
-                  <thead>
-                  <tr>
-                    <th scope="col">Withdrawn molecules</th>
-                    <th scope="col">Tanimoto similarity</th>
-                    <th scope="col">ATC codes</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][0] }}/"
-                           target="_blank" rel="noopener">
-                        {{ prediction['similarities']['wd_similarity']['name'][0] }}</a></td>
-                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][0] }}</td>
-                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][0] }}</td>
-                  </tr>
-                  <tr>
-                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][1] }}/"
-                           target="_blank" rel="noopener">
-                        {{ prediction['similarities']['wd_similarity']['name'][1] }}</a></td>
-                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][1] }}</td>
-                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][1] }}</td>
-                  </tr>
-                  <tr>
-                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][2] }}/"
-                           target="_blank" rel="noopener">
-                        {{ prediction['similarities']['wd_similarity']['name'][2] }}</a></td>
-                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][2] }}</td>
-                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][2] }}</td>
-                  </tr>
-                  </tbody>
-                </table>
-            </div>
-            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
-                <p>Tanimoto similarity to other drugs and ATC groups</p>
-                <table class="table table-striped">
-                  <thead>
-                  <tr>
-                    <th scope="col">Approved molecules</th>
-                    <th scope="col">Tanimoto similarity</th>
-                    <th scope="col">ATC codes</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][0] }}/"
-                           target="_blank" rel="noopener">
-                        {{ prediction['similarities']['ad_similarity']['name'][0] }}</a></td>
-                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][0] }}</td>
-                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][0] }}</td>
-                  </tr>
-                  <tr>
-                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][1] }}/"
-                           target="_blank" rel="noopener">
-                        {{ prediction['similarities']['ad_similarity']['name'][1] }}</a></td>
-                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][1] }}</td>
-                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][1] }}</td>
-                  </tr>
-                  <tr>
-                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][2] }}/"
-                           target="_blank" rel="noopener">
-                        {{ prediction['similarities']['ad_similarity']['name'][2] }}</a></td>
-                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][2] }}</td>
-                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][2] }}</td>
-                  </tr>
-                  </tbody>
-                </table>
-            </div>
-            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">
-                <p>Average Tanimoto similarity to molecules of specific ATC codes</p>
-                <table class="table table-striped">
-                  <thead>
-                  <tr>
-                    <th scope="col">ATC code</th>
-                    <th scope="col">Tanimoto similarity</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td>{{ prediction['similarities']['atc_similarity'][0][0] }}</td>
-                    <td>{{ prediction['similarities']['atc_similarity'][0][1] }}</td>
-                  </tr>
-                  <tr>
-                    <td>{{ prediction['similarities']['atc_similarity'][1][0] }}</td>
-                    <td>{{ prediction['similarities']['atc_similarity'][1][1] }}</td>
-                  </tr>
-                  <tr>
-                    <td>{{ prediction['similarities']['atc_similarity'][2][0] }}</td>
-                    <td>{{ prediction['similarities']['atc_similarity'][2][1] }}</td>
-                  </tr>
-                  </tbody>
-                </table>
-            </div>
+<!--            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">-->
+<!--                <p>Tanimoto similarity to other drugs and ATC groups</p>-->
+<!--                <table class="table table-striped">-->
+<!--                  <thead>-->
+<!--                  <tr>-->
+<!--                    <th scope="col">Withdrawn molecules</th>-->
+<!--                    <th scope="col">Tanimoto similarity</th>-->
+<!--                    <th scope="col">ATC codes</th>-->
+<!--                  </tr>-->
+<!--                  </thead>-->
+<!--                  <tbody>-->
+<!--                  <tr>-->
+<!--                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][0] }}/"-->
+<!--                           target="_blank" rel="noopener">-->
+<!--                        {{ prediction['similarities']['wd_similarity']['name'][0] }}</a></td>-->
+<!--                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][0] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][0] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][1] }}/"-->
+<!--                           target="_blank" rel="noopener">-->
+<!--                        {{ prediction['similarities']['wd_similarity']['name'][1] }}</a></td>-->
+<!--                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][1] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][1] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['wd_similarity']['chembl_id'][2] }}/"-->
+<!--                           target="_blank" rel="noopener">-->
+<!--                        {{ prediction['similarities']['wd_similarity']['name'][2] }}</a></td>-->
+<!--                    <td>{{ prediction['similarities']['wd_similarity']['tanimoto_similarity'][2] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['wd_similarity']['atc_code'][2] }}</td>-->
+<!--                  </tr>-->
+<!--                  </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">-->
+<!--                <p>Tanimoto similarity to other drugs and ATC groups</p>-->
+<!--                <table class="table table-striped">-->
+<!--                  <thead>-->
+<!--                  <tr>-->
+<!--                    <th scope="col">Approved molecules</th>-->
+<!--                    <th scope="col">Tanimoto similarity</th>-->
+<!--                    <th scope="col">ATC codes</th>-->
+<!--                  </tr>-->
+<!--                  </thead>-->
+<!--                  <tbody>-->
+<!--                  <tr>-->
+<!--                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][0] }}/"-->
+<!--                           target="_blank" rel="noopener">-->
+<!--                        {{ prediction['similarities']['ad_similarity']['name'][0] }}</a></td>-->
+<!--                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][0] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][0] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][1] }}/"-->
+<!--                           target="_blank" rel="noopener">-->
+<!--                        {{ prediction['similarities']['ad_similarity']['name'][1] }}</a></td>-->
+<!--                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][1] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][1] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['ad_similarity']['chembl_id'][2] }}/"-->
+<!--                           target="_blank" rel="noopener">-->
+<!--                        {{ prediction['similarities']['ad_similarity']['name'][2] }}</a></td>-->
+<!--                    <td>{{ prediction['similarities']['ad_similarity']['tanimoto_similarity'][2] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['ad_similarity']['atc_code'][2] }}</td>-->
+<!--                  </tr>-->
+<!--                  </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--            <div class="row justify-content-center" *ngIf="prediction" style="margin-top: 20px">-->
+<!--                <p>Average Tanimoto similarity to molecules of specific ATC codes</p>-->
+<!--                <table class="table table-striped">-->
+<!--                  <thead>-->
+<!--                  <tr>-->
+<!--                    <th scope="col">ATC code</th>-->
+<!--                    <th scope="col">Tanimoto similarity</th>-->
+<!--                  </tr>-->
+<!--                  </thead>-->
+<!--                  <tbody>-->
+<!--                  <tr>-->
+<!--                    <td>{{ prediction['similarities']['atc_similarity'][0][0] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['atc_similarity'][0][1] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>{{ prediction['similarities']['atc_similarity'][1][0] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['atc_similarity'][1][1] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>{{ prediction['similarities']['atc_similarity'][2][0] }}</td>-->
+<!--                    <td>{{ prediction['similarities']['atc_similarity'][2][1] }}</td>-->
+<!--                  </tr>-->
+<!--                  </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
         </div>
         <div class="row justify-content-center" style="margin-top: 20px">
             <div class="col-md-4" *ngIf="explainerRunning; then explainSpinner; else explainButton">
