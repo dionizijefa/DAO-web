@@ -4,6 +4,15 @@
         <div class="filter"></div>
     </div>
 </div>
+<ngb-alert *ngIf="rdkitError==true" type="danger" dismissible="true" (click)="removeWarning()">
+  <div class="row justify-content-center">
+      <ng-container>
+        <i class="nc-icon nc-bell-55" style="margin-right: 10px"></i>
+      </ng-container>
+      Error in loading smiles
+      <button type="button" name="button" class="close"></button>
+  </div>
+</ngb-alert>
 <div class="section" style="padding-top: 20px">
         <div class="container">
             <div class="row">
@@ -14,9 +23,11 @@
                       <input type="text" class="form-control" name="smilesInput" ngModel required
                              #first="ngModel" placeholder="SMILES">
                     </div>
-                    <button class="btn btn-danger btn-block btn-round"
+                    <button *ngIf="predictionRunning==false" class="btn btn-danger btn-block btn-round"
                             style="width:50%; left:50%; margin:0 auto;">Predict</button>
                     </form>
+                    <mat-progress-spinner *ngIf="predictionRunning==true"
+                      style="margin:0 auto;" mode="indeterminate" [color]="'warn'" [diameter]="40"></mat-progress-spinner>
                 </div>
             </div>
         </div>

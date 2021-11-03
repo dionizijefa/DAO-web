@@ -25,7 +25,6 @@ export class PredictionComponent implements AfterViewInit {
   constructor(private predictService: PredictService) {
       this.prediction = this.predictService.prediction
       this.moleculeSmiles = this.predictService.moleculeSmiles
-      console.log(this.prediction['similarities']['similarity'])
     }
 
   ngAfterViewInit() {

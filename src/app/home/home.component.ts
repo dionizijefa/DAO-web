@@ -9,6 +9,8 @@ import {Router} from '@angular/router';
 })
 
 export class HomeComponent implements OnInit {
+    predictionRunning = false;
+    rdkitError = false;
     constructor(private predictService: PredictService, private router: Router) {
     }
 
@@ -17,15 +19,25 @@ export class HomeComponent implements OnInit {
 
     public predict(smilesInput) {
         this.predictService.moleculeSmiles = smilesInput;
+        this.predictionRunning = true;
         return this.predictService.predict(smilesInput).subscribe(
             (prediction) => {
                 this.predictService.prediction = prediction;
                 this.router.navigate(['/prediction'])
             },
-        );
+            err => {
+        this.predictionRunning = false;
+        this.rdkitError = true;
+       // check error status code is 500, if so, do some action
+      }
+      );
     }
 
     onSubmit(f: NgForm) {
         this.predict(f.value);
+    }
+
+    removeWarning(): void {
+        this.rdkitError = false;
     }
 }
