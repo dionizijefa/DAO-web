@@ -259,7 +259,6 @@ class DAOWeb:
             'ALERTS': qed_prop[7],
             'QED': round(qed*100, 2),
         }
-        """
         
         data = pd.read_csv('./master_web.csv', index_col=0)
         mols = [MolFromSmiles(i) for i in data['standardized_smiles']]
@@ -269,39 +268,21 @@ class DAOWeb:
         data['query_similarity'] = sims
         wd_sim = data.loc[data['wd_consensus_1'] == 1].sort_values(by='query_similarity', ascending=False)[:3]
         ad_sim = data.loc[data['wd_consensus_1'] == 0].sort_values(by='query_similarity', ascending=False)[:3]
+        wd_sim['status'] = 'Withdrawn'
+        ad_sim['status'] = 'Approved'
+        sims = pd.concat([wd_sim, ad_sim]).sort_values('query_similarity', ascending=False)
 
-        wd_sim_dict = {
-            'chembl_id': [
-                wd_sim.iloc[0]['chembl_id'], wd_sim.iloc[1]['chembl_id'], wd_sim.iloc[2]['chembl_id']
-            ],
-            'atc_code': [
-                wd_sim.iloc[0]['atc_code'], wd_sim.iloc[1]['atc_code'], wd_sim.iloc[2]['atc_code']
-            ],
-            'tanimoto_similarity': [
-                round(wd_sim.iloc[0]['query_similarity'], 2),
-                round(wd_sim.iloc[1]['query_similarity'], 2),
-                round(wd_sim.iloc[2]['query_similarity'], 2)
-            ],
-            'name': [
-                wd_sim.iloc[0]['name'], wd_sim.iloc[1]['name'], wd_sim.iloc[2]['name']
-            ]
-        }
-
-        ad_sim_dict = {
-            'chembl_id': [
-                ad_sim.iloc[0]['chembl_id'], ad_sim.iloc[1]['chembl_id'], ad_sim.iloc[2]['chembl_id']
-            ],
-            'atc_code': [
-                ad_sim.iloc[0]['atc_code'], ad_sim.iloc[1]['atc_code'], ad_sim.iloc[2]['atc_code']
-            ],
-            'tanimoto_similarity': [
-                round(ad_sim.iloc[0]['query_similarity'], 2),
-                round(ad_sim.iloc[1]['query_similarity'], 2),
-                round(ad_sim.iloc[2]['query_similarity'], 2)
-            ],
-            'name': [
-                ad_sim.iloc[0]['name'], ad_sim.iloc[1]['name'], ad_sim.iloc[2]['name']
-            ]
+        sim_dict = {
+            'chembl_id':
+                list(sims['chembl_id']),
+            'atc_code':
+                list(sims['atc_code']),
+            'tanimoto_similarity':
+                list(sims['query_similarity'].round(2)),
+            'name':
+                list(sims['name']),
+            'status':
+                list(sims['status']),
         }
 
         # calculate similarity to second level ATC codes
@@ -334,12 +315,9 @@ class DAOWeb:
             '1': [results.iloc[1]['index'], round(results.iloc[1][0], 2)],
             '2': [results.iloc[2]['index'], round(results.iloc[2][0], 2)],
         }
-
-        similarities = {'wd_similarity': wd_sim_dict, 'ad_similarity': ad_sim_dict, 'atc_similarity': sim_atc}
+        similarities = {'similarity': sim_dict, 'atc_similarity': sim_atc}
         
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, similarities
-        """
-        return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, 1
 
     def explain(self, smiles, epochs=1):
         features = ["boron", "carbon", "nitrogen", "oxygen", "flourine", "phosporus", "sulfur",

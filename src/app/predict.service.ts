@@ -12,7 +12,8 @@ const SERVER_URL = 'http://0.0.0.0:8081/'
   providedIn: 'root'
 })
 export class PredictService {
-
+  public prediction: Prediction;
+  public moleculeSmiles: SmilesInput;
   constructor(private http: HttpClient) { }
 
   public predict(smilesInput: SmilesInput): Observable<Prediction> {
