@@ -4,7 +4,7 @@
 <div class="page-header" data-parallax="true" style="background-image: url('../../assets/img/landing.jpg')">
     <div class="filter"></div>
     <div class="container">
-        <div class="motto text-center">
+        <div class="motto text-center" style="margin-top: 175px">
             <h1 class="presentation-title">Drug Attrition Oracle</h1>
             <h3>Predicting whether drugs will be withdrawn from the market</h3>
             <br />
@@ -13,15 +13,22 @@
                 <h4>Funded by:</h4>
                 <br>
                 <br>
-                <div class="ai4eu-logo">
+                <div class="ai4eu-logo row">
                     <a href="https://www.ai4eu.eu/modrai-0"><img src="assets/img/logo_ai4eu_beta.svg" alt=""></a>
                 </div>
             </div>
-
+            <div style="margin-top: 150px; overflow: auto">
+                <img src="assets/img/eu_flag.png" style="height: 50px;">
+                This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement 825619.
+            </div>
+            <div class="icon icon-danger">
+                <i class="nc-icon nc-minimal-down" style="font-size: 50px; color: #ffffff; cursor: pointer"
+                (mouseover)="scrollEvent(targetScroll)"></i>
+            </div>
         </div>
     </div>
 </div>
-<div class="main">
+<div class="main" #targetScroll>
     <div class="section text-center">
     <div class="container">
         <div class="row">
@@ -43,7 +50,6 @@
                     <div class="description">
                         <h4 class="info-title">Generate predictions</h4>
                         <p class="description">Find out whether your developmental drug is a risky investment</p>
-                        <a href="#pkp" class="btn btn-link btn-danger">See more</a>
                     </div>
                 </div>
             </div>
@@ -56,7 +62,6 @@
                         <h4 class="info-title">Statistics</h4>
                         <p>Compare the features of your drugs to current approved therapies and therapies that have
                         been withdrawn from the market</p>
-                        <a href="#pkp" class="btn btn-link btn-danger">See more</a>
                     </div>
                 </div>
             </div>
@@ -70,7 +75,6 @@
                         <h4 class="info-title">Applicability domain</h4>
                         <p>Investigate how your molecule fits the chemical space of already approved therapeutic
                         molecules</p>
-                        <a href="#pkp" class="btn btn-link btn-danger">See more</a>
                     </div>
                 </div>
             </div>
@@ -117,7 +121,7 @@
                     <div class="card-block">
                         <a href="#paper-kit">
                             <div class="author">
-                                <h4 class="card-title">Višnja Stepanić</h4>
+                                <h4 class="card-title">Višnja Stepanić, PhD</h4>
                                 <h6 class="card-category">Drug discovery</h6>
                             </div>
                         </a>

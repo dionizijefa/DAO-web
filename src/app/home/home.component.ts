@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
                 this.router.navigate(['/prediction'])
             },
             err => {
+        console.log(err);
         this.predictionRunning = false;
         this.rdkitError = true;
        // check error status code is 500, if so, do some action

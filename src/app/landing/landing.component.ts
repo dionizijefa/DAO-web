@@ -14,4 +14,7 @@ export class LandingComponent implements OnInit {
 
   ngOnInit() {}
 
+  scrollEvent(el: HTMLElement) {
+    el.scrollIntoView({behavior: 'smooth'})
+  }
 }
