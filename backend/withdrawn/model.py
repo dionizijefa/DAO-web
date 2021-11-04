@@ -3,7 +3,6 @@ from io import StringIO
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from standardiser import standardise
 from matplotlib import pyplot as plt
 from rdkit import RDConfig, DataStructs
 from rdkit.Chem import HybridizationType, ChemicalFeatures, rdDepictor, MolFromSmiles
@@ -319,7 +318,7 @@ class DAOWeb:
         
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, similarities
 
-    def explain(self, smiles, epochs=1):
+    def explain(self, smiles, epochs=200):
         features = ["boron", "carbon", "nitrogen", "oxygen", "flourine", "phosporus", "sulfur",
                     "chlorine", "bromine", "iodine", "other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
                     "four_Hs", "s", "sp", "sp2", "sp3", "sp3d", "sp3d2", "unspecified_hybr",
@@ -436,6 +435,7 @@ class DAOWeb:
         explainer = shap.TreeExplainer(xgb_model)
         shap_values = explainer(test_example)
 
+        """
         waterfall = StringIO()
         shap.plots._waterfall.waterfall_legacy(
             explainer.expected_value,
@@ -443,11 +443,29 @@ class DAOWeb:
             test_example.iloc[0],
             show=False
         )
+        plt.rcParams.update({'axes.labelsize': 'small'})
         plt.gcf().set_size_inches((3, 4))
         plt.savefig(waterfall, format='svg', bbox_inches='tight')
         waterfall = waterfall.getvalue()
+        """
 
-        return prediction, dict(zip(tasks, predictions)), waterfall
+        plot_values = pd.DataFrame(columns=test_example.columns, data=shap_values.values).transpose().reset_index()
+        px = 1 / plt.rcParams['figure.dpi']
+        fig, ax = plt.subplots(figsize=(300 * px, 500 * px))
+        ax = sns.barplot(data=plot_values, x=0, y='index')
+        ax.set_xlabel("SHAP value")
+        ax.set_ylabel("")
+        for bar in ax.patches:
+            if bar.get_width() < 0:
+                bar.set_color("#1E90FF")
+            else:
+                bar.set_color("#DC143C")
+        ax.set_box_aspect(3 / len(ax.patches))
+        img = StringIO()
+        fig.savefig(img, format='svg', bbox_inches="tight")
+        img = img.getvalue()
+
+        return prediction, dict(zip(tasks, predictions)), img
 
 
 
