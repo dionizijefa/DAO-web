@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {PredictService} from '../predict.service';
 import {NgForm} from '@angular/forms';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
         return this.predictService.predict(smilesInput).subscribe(
             (prediction) => {
                 this.predictService.prediction = prediction;
-                this.router.navigate(['/prediction'])
+                this.router.navigate(['/prediction', smilesInput['smilesInput']])
             },
             err => {
         console.log(err);

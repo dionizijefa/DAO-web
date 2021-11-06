@@ -56,27 +56,33 @@
                 </div>
                 <ng-template #thenTemplate>
                 <ngb-progressbar type="success" [value]="prediction['predictedProbability']"
+                                 title="{{prediction['predictedProbability']}}% probability that molecule will be withdrawn" style="cursor: pointer"
                       [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar>
                 </ng-template>
                 <ng-template #elseTemplate>
                 <ngb-progressbar type="danger" [value]="prediction['predictedProbability']"
+                                 title="{{prediction['predictedProbability']}}% probability that molecule will be withdrawn" style="cursor: pointer"
                                       [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar>
                 </ng-template>
                 <div class="row" style="margin-left: auto; margin-top: 15px;">
                 <h6>P value approved</h6>
                 <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="{{ (prediction['approvedP']*100).toFixed(2) }}% confidence prediction region contains class label Approved"
+                   title="P value defines confidence (P*100%) prediction region which contains class label Approved"
                    style="font-size: 15px; cursor: pointer"></i>
                 </div>
                 <ngb-progressbar type="secondary" [value]="prediction['approvedP']"
+                                 style="cursor: pointer"
+                                 title="{{ (prediction['approvedP']*100).toFixed(2) }}% confidence prediction region contains class label Approved"
                       [max]="1">{{ prediction['approvedP'] }}</ngb-progressbar>
                 <div class="row" style="margin-left: auto; margin-top: 15px;">
                 <h6>P value withdrawn</h6>
                 <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="{{ (prediction['withdrawnP']*100).toFixed(2) }}% confidence prediction region contains class label Withdrawn"
+                   title="P value defines confidence (P*100%) prediction region contains class label Withdrawn"
                    style="font-size: 15px; cursor: pointer"></i>
                 </div>
                 <ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
+                                 style="cursor: pointer"
+                                 title="{{ (prediction['withdrawnP']*100).toFixed(2) }}% confidence prediction region contains class label Withdrawn"
                       [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar>
             </div>
 <!--            <div class="row justify-content-center" style="margin-top: 20px">-->
@@ -146,7 +152,7 @@
 <!--                </table>-->
 <!--            </div>-->
             <div class="row justify-content-center" style="margin-top: 20px">
-                <h6>Similarity to the most similar approved and withdrawn drugs in the database</h6>
+                <h6>Most similar approved and withdrawn drugs in the database</h6>
                 <table class="table table-striped" style="width: 70%">
                   <thead>
                   <tr>
@@ -248,28 +254,48 @@
     </div>
     <div class="col-lg-4 ml-auto mr-auto">
         <div *ngIf="generatedComplementary==true">
-        <h4 *ngIf="generatedComplementary==true" style="margin-botton: 20px">Complementary model</h4>
-            <p>Complementary model predicts additional ADME and TOX properties of your molecules. These predictions
-            are used as features in an XGBoost classification model which increases the performance of the baseline
-            model, however, it provides no statistical guarantees.</p>
-            <p>Complementary model prediction: {{complementary['prediction']}}</p>
-        <p>Bioavailability</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['Bioavailability_Ma']*100"
+        <h4 *ngIf="generatedComplementary==true" style="margin-botton: 20px">Complementary model</h4> <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Complementary model predicts additional ADME and TOX properties of your molecules. These predictions are used as features in an XGBoost classification model which increases the performance of the baseline model, however, it provides no statistical guarantees."
+                   style="font-size: 15px; cursor: pointer"></i>
+            <div *ngIf="complementary['prediction']==1" style="color: #f33816">
+                    <div class="row justify-content-center">
+                    <h3>Withdrawn!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-simple-remove" style="font-size: 100px"></i>
+                    </div>
+                </div>
+            <div *ngIf="complementary['prediction']==0" style="color: #86d9ab">
+                    <div class="row justify-content-center">
+                    <h3>Approved!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
+                    </div>
+            </div>
+        <h5>Individual properties prediction: </h5>
+            <p>Probability of withdrawal:</p>
+                <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"></div>
+        <p>Bioavailability:</p>
+        <p><ngb-progressbar type="sucess"
+                            title="{{complementary['tasks']['Bioavailability_Ma']*100}}% probability that the molecule is active" style="cursor: pointer"
+                            [value]="complementary['tasks']['Bioavailability_Ma']*100"
                       [max]="100">{{complementary['tasks']['Bioavailability_Ma']*100}}%</ngb-progressbar></p>
-        <p>Peroxisome proliferator-activated receptor gamma</p>
+        <p>Peroxisome proliferator-activated receptor gamma:</p>
         <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['nr-ppar-gamma']*100"
+                            title="{{complementary['tasks']['nr-ppar-gamma']*100}}% probability that the molecule is active" style="cursor: pointer"
                       [max]="100">{{complementary['tasks']['nr-ppar-gamma']*100}}%</ngb-progressbar></p>
-        <p>Genotoxicity SR-ATAD5</p>
+        <p>Genotoxicity SR-ATAD5:</p>
         <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-atad5']*100"
+                            title="{{complementary['tasks']['sr-atad5']*100}}% probability that the molecule is active" style="cursor: pointer"
                       [max]="100">{{complementary['tasks']['sr-atad5']*100}}%</ngb-progressbar></p>
-        <p>SR-MMP</p>
+        <p>SR-MMP:</p>
         <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-mmp']*100"
+                            title="{{complementary['tasks']['sr-mmp']*100}}% probability that the molecule is active" style="cursor: pointer"
                       [max]="100">{{complementary['tasks']['sr-mmp']*100}}%</ngb-progressbar></p>
         </div>
     <div class="row justify-content-center" style="margin-top: 20px">
-        <p *ngIf="generatedComplementary">Waterfall plot of SHAP values for the variables of the complementary model.
-        Red bar describes by how much each variable changes the log-odds ratio to classify the molecule as withdrawn.</p>
-        <p *ngif="generatedComplementary">Variables in blue bars push the log-odds ratio to classify the molecule as approved.</p>
+        <h5 *ngIf="generatedComplementary==true">Influence of each prediction:</h5>
     <div #shap></div>
     </div>
     </div>

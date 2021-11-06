@@ -379,6 +379,9 @@ class DAOWeb:
         #fig.tight_layout()
         ax.set_xlim(0, 1)
         ax.yaxis.label.set_size(60)
+        ax.xaxis.label.set_color('#66615b')
+        ax.tick_params(axis='x', colors='#66615b')
+        ax.tick_params(axis='y', colors='#66615b')
         sns.barplot(data=node_feat_importance, orient='horizontal', ax=ax)
         img = StringIO()
         fig.savefig(img, format='svg', bbox_inches="tight")
@@ -455,11 +458,20 @@ class DAOWeb:
         ax = sns.barplot(data=plot_values, x=0, y='index')
         ax.set_xlabel("SHAP value")
         ax.set_ylabel("")
-        for bar in ax.patches:
+        ax.xaxis.label.set_color('#66615b')
+        #ax.axvline(shap_values.base_values)
+        plt.xticks()
+        ax.tick_params(axis='x', colors='#66615b')
+        ax.tick_params(axis='y', colors='#66615b')
+        last_position = [0]
+        for i, bar in enumerate(ax.patches):
+            x = bar.get_x()
+            last_position.append(x)
             if bar.get_width() < 0:
                 bar.set_color("#1E90FF")
+                bar.set_x(last_position[i] + x)
             else:
-                bar.set_color("#DC143C")
+                bar.set_color("#f33816")
         ax.set_box_aspect(3 / len(ax.patches))
         img = StringIO()
         fig.savefig(img, format='svg', bbox_inches="tight")

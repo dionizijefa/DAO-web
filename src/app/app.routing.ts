@@ -10,7 +10,8 @@ const routes: Routes = [
     { path: '', redirectTo: 'landing', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
     { path: 'landing', component: LandingComponent },
-    { path: 'prediction', component: PredictionComponent }
+    { path: 'prediction/:id', component: PredictionComponent },
+    { path: '**', component: LandingComponent }
 ];
 
 @NgModule({
