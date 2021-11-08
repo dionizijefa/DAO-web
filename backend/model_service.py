@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, abort
 from flask_cors import CORS
 from withdrawn.model import DAOWeb
-from standardiser import standardise
+from jinja2 import TemplateNotFound
 
 # declare constants
 HOST = '0.0.0.0'
@@ -10,6 +10,13 @@ PORT = 8081
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    try:
+        return render_template('index.html')
+    except TemplateNotFound:
+        abort(404)
 
 @app.route('/predict', methods=['POST'])
 def predict():

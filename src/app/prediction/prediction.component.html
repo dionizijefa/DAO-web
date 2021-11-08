@@ -274,25 +274,23 @@
                     </div>
             </div>
         <h5>Individual properties prediction: </h5>
-            <p>Probability of withdrawal:</p>
+            <p>1. Probability of withdrawal:</p>
                 <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"></div>
-        <p>Bioavailability:</p>
+        <p>2. CYP2C9 Substrate:</p>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100"
+                            title="{{complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100}}% probability that the molecule is CYP2C9 substrate" style="cursor: pointer"
+                      [max]="100">{{complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100}}%</ngb-progressbar></p>
+            <p>3. Peroxisome proliferator-activated receptor gamma:</p>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['nr-ppar-gamma']*100"
+                            title="{{complementary['tasks']['nr-ppar-gamma']*100}}% probability that the molecule is active" style="cursor: pointer"
+                      [max]="100">{{complementary['tasks']['nr-ppar-gamma']*100}}%</ngb-progressbar></p>
+            <p>4. Bioavailability:</p>
         <p><ngb-progressbar type="sucess"
                             title="{{complementary['tasks']['Bioavailability_Ma']*100}}% probability that the molecule is active" style="cursor: pointer"
                             [value]="complementary['tasks']['Bioavailability_Ma']*100"
                       [max]="100">{{complementary['tasks']['Bioavailability_Ma']*100}}%</ngb-progressbar></p>
-        <p>Peroxisome proliferator-activated receptor gamma:</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['nr-ppar-gamma']*100"
-                            title="{{complementary['tasks']['nr-ppar-gamma']*100}}% probability that the molecule is active" style="cursor: pointer"
-                      [max]="100">{{complementary['tasks']['nr-ppar-gamma']*100}}%</ngb-progressbar></p>
-        <p>Genotoxicity SR-ATAD5:</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-atad5']*100"
-                            title="{{complementary['tasks']['sr-atad5']*100}}% probability that the molecule is active" style="cursor: pointer"
-                      [max]="100">{{complementary['tasks']['sr-atad5']*100}}%</ngb-progressbar></p>
-        <p>SR-MMP:</p>
-        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['sr-mmp']*100"
-                            title="{{complementary['tasks']['sr-mmp']*100}}% probability that the molecule is active" style="cursor: pointer"
-                      [max]="100">{{complementary['tasks']['sr-mmp']*100}}%</ngb-progressbar></p>
+        <p>5. Clearance Hepatocyte: </p>
+        <p>{{complementary['tasks']['Clearance_Hepatocyte_AZ'].toFixed(2)}} <span>&#181;</span>Lmin<sup>-1</sup>(10<sup>-6</sup>cells)<sup>-1</sup></p>
         </div>
     <div class="row justify-content-center" style="margin-top: 20px">
         <h5 *ngIf="generatedComplementary==true">Influence of each prediction:</h5>

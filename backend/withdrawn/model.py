@@ -1,9 +1,11 @@
 import pickle
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 from io import StringIO
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 from rdkit import RDConfig, DataStructs
 from rdkit.Chem import HybridizationType, ChemicalFeatures, rdDepictor, MolFromSmiles
 from rdkit.Chem.AllChem import GetMorganFingerprintAsBitVect
@@ -405,7 +407,11 @@ class DAOWeb:
 
         predictions = []
         predictions.append(round(withdrawn_prob/100, 2))
-        tasks = ['predict_withdrawn', 'nr-ppar-gamma', 'sr-atad5', 'sr-mmp', 'Bioavailability_Ma']
+        tasks = ['predict_withdrawn',
+                 'CYP2C9_Substrate_CarbonMangels',
+                 'nr-ppar-gamma',
+                 'Bioavailability_Ma',
+                 'Clearance_Hepatocyte_AZ']
 
         data = self.smiles2graph(r'{}'.format(smiles))
         data.batch = zeros(data.num_nodes, dtype=long)
@@ -425,8 +431,11 @@ class DAOWeb:
             output = compl_model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
             if task in classification_tasks:
                 output = round(((1 / (1 + np.exp(-output)))), 2)
-            predictions.append(output)
+            else:
+                output = round(output, 2)
+            predictions.append(output.astype(float))
 
+        print(predictions)
         test_example = pd.DataFrame(columns=tasks, data=[predictions], index=[0])
 
         xgb_file = open(compl_root / 'complementary/xgb_classifier_reduced.pkl', 'rb')
@@ -451,6 +460,11 @@ class DAOWeb:
         plt.savefig(waterfall, format='svg', bbox_inches='tight')
         waterfall = waterfall.getvalue()
         """
+
+        test_example.rename(columns={'Clearance_Hepatocyte_AZ': 'Clearance Hepatocyte',
+                                     'Bioavailability_Ma': 'Bioavailability',
+                                     'CYP2C9_Substrate_CarbonMangels': 'CYP2C9 Substrate',
+                                     'predict_withdrawn': 'Predict withdrawn'}, inplace=True)
 
         plot_values = pd.DataFrame(columns=test_example.columns, data=shap_values.values).transpose().reset_index()
         px = 1 / plt.rcParams['figure.dpi']
@@ -477,6 +491,7 @@ class DAOWeb:
         fig.savefig(img, format='svg', bbox_inches="tight")
         img = img.getvalue()
 
+        print(predictions)
         return prediction, dict(zip(tasks, predictions)), img
 
 

@@ -21,18 +21,16 @@
                     <a href="https://github.com/dionizijefa/Drug-Attrition-Oracle" rel="tooltip" title="Read the documentation"
                        class="nav-link" target="_blank"><i class="nc-icon nc-book-bookmark"></i> Documentation</a>
                 </li>
-                <li class="nav-item" *ngIf="isHome()">
-                    <a [routerLink]="['/landing']" rel="tooltip" title="Back to landing page"
-                       class="nav-link">About</a>
-                </li>
                 <li class="nav-item">
-                    <a href="" target="_blank" class="btn btn-danger btn-round" rel="tooltip"
-                       title="Find out about our commercial solutions">AI4EU</a>
+                    <a class="nav-link" rel="tooltip" title="Ruđer Bošković Institute" data-placement="bottom"
+                       href="https://www.irb.hr/eng" target="_blank">
+                        <img src="assets/img/ruder.svg" height="25 px">
+                    </a>
                 </li>
-                <li class="nav-item" *ngIf="isDocumentation()">
-                    <a href="" target="_blank" class="nav-link">Have an issue</a>
+                <li class="nav-item" *ngIf="!isLanding()">
+                    <a [routerLink]="['/landing']" href="" class="btn btn-danger btn-round"
+                       rel="tooltip" title="Go to landing page">About</a>
                 </li>
-
             </ul>
         </div>
     </div>
