@@ -20,11 +20,13 @@
                     <h3 class="title mx-auto">Predict the probability of your drug being withdrawn from the market</h3>
                     <form #f="ngForm" class="register-form" (ngSubmit) = "onSubmit(f)">
                     <div class="input-group bg-danger" style="margin-bottom: 10px">
-                      <input type="text" class="form-control" name="smilesInput" ngModel required
+                      <input type="text" class="form-control" name="smilesInput" ngModel required minlength="1"
+                             pattern="^([^J][A-Za-z0-9@+\-\[\]\(\)\\\/%=#$]+)$"
                              #first="ngModel" placeholder="SMILES">
                     </div>
                     <button *ngIf="predictionRunning==false" class="btn btn-danger btn-block btn-round"
-                            style="width:50%; left:50%; margin:0 auto;">Predict</button>
+                            style="width:50%; left:50%; margin:0 auto;"
+                    [disabled]="f.invalid">Predict</button>
                     </form>
                     <mat-progress-spinner *ngIf="predictionRunning==true"
                       style="margin:0 auto;" mode="indeterminate" [color]="'warn'" [diameter]="40"></mat-progress-spinner>

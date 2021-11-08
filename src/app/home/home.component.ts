@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
 
     public predict(smilesInput) {
         this.predictService.moleculeSmiles = smilesInput;
+        this.removeWarning();
         this.predictionRunning = true;
         return this.predictService.predict(smilesInput).subscribe(
             (prediction) => {

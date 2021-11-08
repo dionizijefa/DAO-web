@@ -296,7 +296,8 @@
         </div>
     <div class="row justify-content-center" style="margin-top: 20px">
         <h5 *ngIf="generatedComplementary==true">Influence of each prediction:</h5>
-    <div #shap></div>
+    <div #shap title="Variables with blue bars increase the log-odds of a molecule being approved, while the red ones increase the log-odds of being withdrawn"
+    style="cursor: pointer"></div>
     </div>
     </div>
     </div>
