@@ -388,6 +388,7 @@ class DAOWeb:
         img = StringIO()
         fig.savefig(img, format='svg', bbox_inches="tight")
         img = img.getvalue()
+        plt.close()
 
         """Atom symbols in feature importance
         mol = Chem.MolFromSmiles(r'{}'.format(smiles))
@@ -490,8 +491,8 @@ class DAOWeb:
         img = StringIO()
         fig.savefig(img, format='svg', bbox_inches="tight")
         img = img.getvalue()
+        plt.close()
 
-        print(predictions)
         return prediction, dict(zip(tasks, predictions)), img
 
 
