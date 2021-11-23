@@ -321,7 +321,7 @@ class DAOWeb:
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, similarities
 
     def explain(self, smiles, epochs=200):
-        features = ["boron", "carbon", "nitrogen", "oxygen", "flourine", "phosporus", "sulfur",
+        features = ["boron", "carbon", "nitrogen", "oxygen", "fluorine", "phosphorus", "sulfur",
                     "chlorine", "bromine", "iodine", "other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
                     "four_Hs", "s", "sp", "sp2", "sp3", "sp3d", "sp3d2", "unspecified_hybr",
                     "in_ring", "aromatic", "donor", "acceptor"]
@@ -436,7 +436,6 @@ class DAOWeb:
                 output = round(output, 2)
             predictions.append(output.astype(float))
 
-        print(predictions)
         test_example = pd.DataFrame(columns=tasks, data=[predictions], index=[0])
 
         xgb_file = open(compl_root / 'complementary/xgb_classifier_reduced.pkl', 'rb')
@@ -447,20 +446,6 @@ class DAOWeb:
 
         explainer = shap.TreeExplainer(xgb_model)
         shap_values = explainer(test_example)
-
-        """
-        waterfall = StringIO()
-        shap.plots._waterfall.waterfall_legacy(
-            explainer.expected_value,
-            shap_values[0].values,
-            test_example.iloc[0],
-            show=False
-        )
-        plt.rcParams.update({'axes.labelsize': 'small'})
-        plt.gcf().set_size_inches((3, 4))
-        plt.savefig(waterfall, format='svg', bbox_inches='tight')
-        waterfall = waterfall.getvalue()
-        """
 
         test_example.rename(columns={'Clearance_Hepatocyte_AZ': 'Clearance Hepatocyte',
                                      'Bioavailability_Ma': 'Bioavailability',
@@ -474,7 +459,6 @@ class DAOWeb:
         ax.set_xlabel("SHAP value")
         ax.set_ylabel("")
         ax.xaxis.label.set_color('#66615b')
-        #ax.axvline(shap_values.base_values)
         plt.xticks()
         ax.tick_params(axis='x', colors='#66615b')
         ax.tick_params(axis='y', colors='#66615b')
@@ -483,7 +467,7 @@ class DAOWeb:
             x = bar.get_x()
             last_position.append(x)
             if bar.get_width() < 0:
-                bar.set_color("#1E90FF")
+                bar.set_color("#86d9ab")
                 bar.set_x(last_position[i] + x)
             else:
                 bar.set_color("#f33816")

@@ -6,7 +6,7 @@
 </div>
     <div class="container">
         <div class="row justify-content-center">
-            <h3>Drug Attrition Oracle - Conformal prediction</h3>
+            <h3>Drug Attrition Oracle - GCN Conformal prediction</h3>
             <a class="nav-link" rel="tooltip" style="padding: 0; margin-top: 28px"
                title="What is a conformal prediction?" placement="top"
                    href="https://blog.dataiku.com/measuring-models-uncertainty-conformal-prediction" target="_blank">
@@ -26,7 +26,7 @@
                         <a href="https://www.atccode.com/{{ prediction['similarities']['atc_similarity'][0][0] }}"
                            title="Go to atccode.com"
                            target="_blank" rel="noopener">{{ prediction['similarities']['atc_similarity'][0][0] }}</a> with mean Tanimoto similarity of
-                        {{ prediction['similarities']['atc_similarity'][0][1] }}, folled by ATC code
+                        {{ prediction['similarities']['atc_similarity'][0][1] }}, followed by ATC code
                         <a href="https://www.atccode.com/{{ prediction['similarities']['atc_similarity'][1][0] }}"
                            title="Go to atccode.com"
                            target="_blank" rel="noopener">{{ prediction['similarities']['atc_similarity'][1][0] }}</a> with mean Tanimoto similarity of
@@ -50,39 +50,39 @@
                     <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
                     </div>
                 </div>
-                <h6>Probability of withdrawal</h6>
+                <h6>Probability of class "withdrawn"</h6>
                 <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
                 class="cold-md-4 ml-auto mr-auto">
                 </div>
                 <ng-template #thenTemplate>
                 <ngb-progressbar type="success" [value]="prediction['predictedProbability']"
-                                 title="{{prediction['predictedProbability']}}% probability that molecule will be withdrawn" style="cursor: pointer"
+                                 title="{{prediction['predictedProbability']}}% probability that the molecule belongs to the withdrawn class" style="cursor: pointer"
                       [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar>
                 </ng-template>
                 <ng-template #elseTemplate>
                 <ngb-progressbar type="danger" [value]="prediction['predictedProbability']"
-                                 title="{{prediction['predictedProbability']}}% probability that molecule will be withdrawn" style="cursor: pointer"
+                                 title="{{prediction['predictedProbability']}}% probability that the molecule belongs to the withdrawn class" style="cursor: pointer"
                                       [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar>
                 </ng-template>
                 <div class="row" style="margin-left: auto; margin-top: 15px;">
                 <h6>P value approved</h6>
                 <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="P value defines confidence (P*100%) prediction region which contains class label Approved"
+                   title="P value defines confidence prediction region which contains class label Approved"
                    style="font-size: 15px; cursor: pointer"></i>
                 </div>
                 <ngb-progressbar type="secondary" [value]="prediction['approvedP']"
                                  style="cursor: pointer"
-                                 title="{{ (prediction['approvedP']*100).toFixed(2) }}% confidence prediction region contains class label Approved"
+                                 title="{{ (prediction['approvedP']*100).toFixed(0) }}% confidence prediction region contains class label Approved"
                       [max]="1">{{ prediction['approvedP'] }}</ngb-progressbar>
                 <div class="row" style="margin-left: auto; margin-top: 15px;">
                 <h6>P value withdrawn</h6>
                 <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="P value defines confidence (P*100%) prediction region contains class label Withdrawn"
+                   title="P value defines confidence prediction region which contains class label Withdrawn"
                    style="font-size: 15px; cursor: pointer"></i>
                 </div>
                 <ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
                                  style="cursor: pointer"
-                                 title="{{ (prediction['withdrawnP']*100).toFixed(2) }}% confidence prediction region contains class label Withdrawn"
+                                 title="{{ (prediction['withdrawnP']*100).toFixed(0) }}% confidence prediction region contains class label Withdrawn"
                       [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar>
             </div>
 <!--            <div class="row justify-content-center" style="margin-top: 20px">-->
@@ -243,20 +243,24 @@
     <div class="col-lg-4 ml-auto mr-auto">
         <h4 *ngIf="generatedExplanation==true" style="margin-botton: 20px">GNN explainer</h4>
         <div class="row">
-           <p *ngIf="generatedExplanation==true">Highlighted edges are part of computation graphs that are most influential for the model's predictions.
+           <p *ngIf="generatedExplanation==true">Highlighted bonds are parts of the molecule that are most influential for the model's predictions.
                Edges that have an absolute z-score greater than one are highlighted</p>
         <div #moleculeGraph></div>
         </div>
         <div class="row">
-           <p *ngIf="generatedExplanation==true">Node features that are most influential for the model's prediction.</p>
+           <p *ngIf="generatedExplanation==true">Complete set of atom features with their influence on the model predictions.
+               Higher scores are more influential.</p>
         <div #featuresGraph></div>
         </div>
     </div>
     <div class="col-lg-4 ml-auto mr-auto">
         <div *ngIf="generatedComplementary==true">
-        <h4 *ngIf="generatedComplementary==true" style="margin-botton: 20px">Complementary model</h4> <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="Complementary model predicts additional ADME and TOX properties of your molecules. These predictions are used as features in an XGBoost classification model which increases the performance of the baseline model, however, it provides no statistical guarantees."
-                   style="font-size: 15px; cursor: pointer"></i>
+        <div *ngIf="generatedComplementary==true" class="row justify-content center">
+        <h4 style="margin-botton: 20px">Complementary model</h4>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Complementary model uses predictions of additional ADME and TOX properties as features of the model along with the output probability of the GCN model. Selected features have the highest feature importance out of a bigger set from the Therapeutic Data Commons molecular prediction tasks."
+                   style="font-size: 15px; cursor: pointer; margin-top: 35px"></i>
+        </div>
             <div *ngIf="complementary['prediction']==1" style="color: #f33816">
                     <div class="row justify-content-center">
                     <h3>Withdrawn!</h3>
@@ -274,26 +278,59 @@
                     </div>
             </div>
         <h5>Individual properties prediction: </h5>
-            <p>1. Probability of withdrawal:</p>
-                <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"></div>
-        <p>2. CYP2C9 Substrate:</p>
+        <div class="row justify content center">
+        <p>1. GCN Probability </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Predicted probability from the GCN conformal prediction"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
+            <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"></div>
+        <div class="row justify content center">
+            <p>2. Metabolism </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Metabolism contribution is estimated by predicting if the molecule is metabolized by CYP2C9 enzyme"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
         <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100"
                             title="{{complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100}}% probability that the molecule is CYP2C9 substrate" style="cursor: pointer"
                       [max]="100">{{complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100}}%</ngb-progressbar></p>
-            <p>3. Peroxisome proliferator-activated receptor gamma:</p>
+        <div class="row justify content center">
+            <p>3. Toxicity </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Toxicity is estimated by predicting if the molecules has potential to activate Peroxisome Proliferator-activated receptor gamma "
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
         <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['nr-ppar-gamma']*100"
-                            title="{{complementary['tasks']['nr-ppar-gamma']*100}}% probability that the molecule is active" style="cursor: pointer"
+                            title="{{complementary['tasks']['nr-ppar-gamma']*100}}% probability that the molecule activates ppar-gamma" style="cursor: pointer"
                       [max]="100">{{complementary['tasks']['nr-ppar-gamma']*100}}%</ngb-progressbar></p>
-            <p>4. Bioavailability:</p>
+        <div class="row justify content center">
+            <p>4. Absorption </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Absorption is estimated by predicting if the molecules has high oral bioavailability"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
         <p><ngb-progressbar type="sucess"
-                            title="{{complementary['tasks']['Bioavailability_Ma']*100}}% probability that the molecule is active" style="cursor: pointer"
+                            title="{{complementary['tasks']['Bioavailability_Ma']*100}}% probability that the molecule is highly bioavailable" style="cursor: pointer"
                             [value]="complementary['tasks']['Bioavailability_Ma']*100"
                       [max]="100">{{complementary['tasks']['Bioavailability_Ma']*100}}%</ngb-progressbar></p>
-        <p>5. Clearance Hepatocyte: </p>
+        <div class="row justify content center">
+            <p>5. Excretion </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Excretion is estimated by predicting the volume of plasna cleared of a drugover a specified period of time"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
         <p>{{complementary['tasks']['Clearance_Hepatocyte_AZ'].toFixed(2)}} <span>&#181;</span>Lmin<sup>-1</sup>(10<sup>-6</sup>cells)<sup>-1</sup></p>
         </div>
     <div class="row justify-content-center" style="margin-top: 20px">
-        <h5 *ngIf="generatedComplementary==true">Influence of each prediction:</h5>
+        <div *ngIf="generatedComplementary==true" class="row justify-content-center">
+        <h5>Influence of each prediction</h5>
+        <a href="https://shap.readthedocs.io/en/latest/index.html"
+        class="nav-link" rel="tooltip" style="padding: 0; margin-top: 5px">
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="What is SHAP?"
+                   style="font-size: 15px; cursor: pointer"></i>
+            </a>
+        </div>
     <div #shap title="Variables with blue bars increase the log-odds of a molecule being approved, while the red ones increase the log-odds of being withdrawn"
     style="cursor: pointer"></div>
     </div>
