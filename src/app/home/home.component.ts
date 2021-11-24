@@ -11,6 +11,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class HomeComponent implements OnInit {
     predictionRunning = false;
     rdkitError = false;
+    requestError = false;
     constructor(private predictService: PredictService, private router: Router) {
     }
 
@@ -27,9 +28,12 @@ export class HomeComponent implements OnInit {
                 this.router.navigate(['/prediction', smilesInput['smilesInput']])
             },
             err => {
-        console.log(err);
+        if (err.status === 429) {
+            this.requestError = true;
+        } else {
+            this.rdkitError = true;
+        }
         this.predictionRunning = false;
-        this.rdkitError = true;
        // check error status code is 500, if so, do some action
       }
       );
@@ -41,5 +45,6 @@ export class HomeComponent implements OnInit {
 
     removeWarning(): void {
         this.rdkitError = false;
+        this.requestError = false;
     }
 }

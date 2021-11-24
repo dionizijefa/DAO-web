@@ -1,5 +1,7 @@
 import pickle
 import matplotlib
+from standardiser import standardise
+
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from io import StringIO
@@ -226,6 +228,7 @@ class DAOWeb:
 
     def predict(self, smiles):
 
+        smiles = standardise.run(r'{}'.format(smiles))
         mol = MolFromSmiles(r'{}'.format(smiles))
         rdDepictor.Compute2DCoords(mol)
         drawer = rdMolDraw2D.MolDraw2DSVG(400, 200)
@@ -233,7 +236,6 @@ class DAOWeb:
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace('svg:', '')
 
-        #smiles = standardise.run(r'{}'.format(smiles))
         data = self.smiles2graph(r'{}'.format(smiles))
         data.batch = zeros(data.num_nodes, dtype=long)
         output = self.model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
@@ -332,6 +334,7 @@ class DAOWeb:
         np.random.seed(0)
 
         explainer = GNNExplainer(self.model, epochs=epochs)
+        smiles = standardise.run(r'{}'.format(smiles))
         data = self.smiles2graph(smiles)
         data.batch = zeros(data.num_nodes, dtype=long)
         node_feat_mask, edge_mask = explainer.explain_graph(data.x, data.edge_index)
@@ -414,6 +417,7 @@ class DAOWeb:
                  'Bioavailability_Ma',
                  'Clearance_Hepatocyte_AZ']
 
+        smiles = standardise.run(r'{}'.format(smiles))
         data = self.smiles2graph(r'{}'.format(smiles))
         data.batch = zeros(data.num_nodes, dtype=long)
 

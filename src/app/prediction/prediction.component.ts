@@ -20,6 +20,8 @@ export class PredictionComponent implements AfterViewInit {
     public generatedComplementary = false;
     public complementaryRunning = false;
     public complementary;
+    public explainRequestError = false;
+    public complementRequestError = false;
 
 
   constructor(private predictService: PredictService) {
@@ -39,7 +41,14 @@ export class PredictionComponent implements AfterViewInit {
                 this.featuresGraph.nativeElement.innerHTML = this.explanation['featureImportance']
                 this.generatedExplanation = true;
                 this.explainerRunning = false;
+                this.explainRequestError = false;
             },
+            err => {
+              if (err.status === 429) {
+                  this.explainRequestError = true;
+                  this.explainerRunning = false;
+              }
+          }
         );
   }
 
@@ -50,7 +59,14 @@ export class PredictionComponent implements AfterViewInit {
               this.complementary = complementary;
               this.shap.nativeElement.innerHTML = this.complementary['force']
               this.complementaryRunning = false;
+              this.complementRequestError = false;
           },
+          err => {
+              if (err.status === 429) {
+                  this.complementRequestError = true
+                  this.complementaryRunning = false;
+              }
+          }
       );
   }
 
@@ -63,4 +79,9 @@ export class PredictionComponent implements AfterViewInit {
         this.complementaryRunning = true;
         this.complement(this.moleculeSmiles, this.prediction['predictedProbability'])
     }
+
+  removeWarning(): void {
+        this.explainRequestError = false;
+        this.complementRequestError = false;
+  }
 }

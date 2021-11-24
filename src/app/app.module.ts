@@ -13,6 +13,7 @@ import {HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { PredictionComponent } from './prediction/prediction.component';
+import { DocumentationComponent } from './documentation/documentation.component';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { PredictionComponent } from './prediction/prediction.component';
     LandingComponent,
     HomeComponent,
     PredictionComponent,
+    DocumentationComponent,
   ],
   imports: [
     BrowserModule,

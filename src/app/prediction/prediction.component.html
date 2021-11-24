@@ -4,6 +4,15 @@
         <div class="filter"></div>
     </div>
 </div>
+<ngb-alert *ngIf="explainRequestError==true || complementRequestError==true" type="danger" dismissible="true" (click)="removeWarning()">
+  <div class="row justify-content-center">
+      <ng-container>
+        <i class="nc-icon nc-bell-55" style="margin-right: 10px"></i>
+      </ng-container>
+      Too many requests. Explainer requests are limited to 1 per minute and 10 per hour.
+      <button type="button" name="button" class="close"></button>
+  </div>
+</ngb-alert>
     <div class="container">
         <div class="row justify-content-center">
             <h3>Drug Attrition Oracle - GCN Conformal prediction</h3>
