@@ -1,7 +1,6 @@
 import pickle
 import matplotlib
 from standardiser import standardise
-
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from io import StringIO
@@ -322,7 +321,7 @@ class DAOWeb:
         
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, similarities
 
-    def explain(self, smiles, epochs=200):
+    def explain(self, smiles, epochs=75):
         features = ["boron", "carbon", "nitrogen", "oxygen", "fluorine", "phosphorus", "sulfur",
                     "chlorine", "bromine", "iodine", "other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
                     "four_Hs", "s", "sp", "sp2", "sp3", "sp3d", "sp3d2", "unspecified_hybr",
@@ -451,10 +450,18 @@ class DAOWeb:
         explainer = shap.TreeExplainer(xgb_model)
         shap_values = explainer(test_example)
 
+        """
         test_example.rename(columns={'Clearance_Hepatocyte_AZ': 'Clearance Hepatocyte',
                                      'Bioavailability_Ma': 'Bioavailability',
                                      'CYP2C9_Substrate_CarbonMangels': 'CYP2C9 Substrate',
                                      'predict_withdrawn': 'Predict withdrawn'}, inplace=True)
+        """
+
+        test_example.rename(columns={'Clearance_Hepatocyte_AZ': 'Excretion',
+                                     'Bioavailability_Ma': 'Absorption',
+                                     'CYP2C9_Substrate_CarbonMangels': 'Metabolism',
+                                     'predict_withdrawn': 'Withdrawn prediction',
+                                     'nr-ppar-gamma': 'Toxicity'}, inplace=True)
 
         plot_values = pd.DataFrame(columns=test_example.columns, data=shap_values.values).transpose().reset_index()
         px = 1 / plt.rcParams['figure.dpi']

@@ -5,13 +5,15 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { LandingComponent } from './landing/landing.component';
 import {PredictionComponent} from './prediction/prediction.component';
+import {DocumentationComponent} from './documentation/documentation.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'landing', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
     { path: 'landing', component: LandingComponent },
     { path: 'prediction/:id', component: PredictionComponent },
-    { path: '**', component: LandingComponent }
+    { path: 'documentation', component: DocumentationComponent},
+    { path: '**', component: LandingComponent },
 ];
 
 @NgModule({
