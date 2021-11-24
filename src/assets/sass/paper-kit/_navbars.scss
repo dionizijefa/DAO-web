@@ -16,6 +16,10 @@
     background: $white-color;
     box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15);
 
+    .dao_logo{
+        content:url("../../../assets/img/dao_black.png")
+    }
+
     .navbar-brand{
         font-weight: $font-weight-bold;
         margin: $navbar-margin-brand;
@@ -168,6 +172,10 @@
             @include opacity(1);
             color: $white-color;
         }
+    }
+
+    .dao_logo{
+        content:url("../../../assets/img/dao_transparent_2.png")
     }
 
     .navbar-nav{
