@@ -1,0 +1,31 @@
+# Run docker-compose build
+# Run docker-compose up
+
+version: '2'
+
+services:
+  nginx:
+    container_name: nginx_container
+    restart: always
+    container_name: nginx
+    image: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    volumes:
+     - ./client/dist:/usr/share/nginx/html
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - flask
+
+  flask:
+    container_name: flask_container
+    restart: always
+    image: flask
+    build: ./server
+    volumes:
+    - ./server/main:/usr/src/app
+    ports:
+      - "5000:5000"

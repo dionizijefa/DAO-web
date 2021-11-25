@@ -1,0 +1,304 @@
+<div class="page-header" data-parallax="true" style="background-image: url('assets/img/landing.jpg')">
+    <div class="filter"></div>
+    <div class="container">
+        <div class="motto text-center" style="margin-top: 175px">
+            <h1 class="presentation-title">Drug Attrition Oracle</h1>
+            <h3>Predicting whether drugs will be withdrawn from the market</h3>
+            <br />
+            <a [routerLink]="['/home']" class="btn btn-outline-neutral btn-round btn-lg">Try it out</a>
+            <div>
+                <h4>Funded by:</h4>
+                <br>
+                <br>
+                <div class="ai4eu-logo">
+                    <a href="https://aiexp.ai4europe.eu/#/home" target="_blank"><img src="assets/img/ai4eu-logo.svg" alt=""></a>
+                </div>
+            </div>
+            <div style="margin-top: 150px; overflow: auto">
+                <img src="assets/img/eu_flag.png" style="height: 50px;">
+                This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement 825619.
+            </div>
+            <div class="icon icon-danger">
+                <i class="nc-icon nc-minimal-down" style="font-size: 50px; color: #ffffff; cursor: pointer"
+                (mouseover)="scrollEvent(targetScroll)"></i>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main" #targetScroll>
+    <div class="section text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mr-auto ml-auto">
+                <h2 class="title">The model</h2>
+                <h5 class="description">Drug attrition oracle predicts whether a drug will be withdrawn
+                from the market based on structural information of the molecules</h5>
+                <br>
+                <a href="#paper-kit" class="btn btn-danger btn-round">See Details</a>
+            </div>
+        </div>
+        <br/><br/>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="info">
+                    <div class="icon icon-danger">
+                        <i class="nc-icon nc-check-2"></i>
+                    </div>
+                    <div class="description">
+                        <h4 class="info-title">Generate predictions</h4>
+                        <p class="description">Find out whether your developmental drug is a risky investment</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info">
+                    <div class="icon icon-danger">
+                        <i class="nc-icon nc-chart-bar-32"></i>
+                    </div>
+                    <div class="description">
+                        <h4 class="info-title">Statistics</h4>
+                        <p>Compare the features of your drugs to current approved therapies and therapies that have
+                        been withdrawn from the market</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="info">
+                    <div class="icon icon-danger">
+                        <i class="nc-icon nc-alert-circle-i"></i>
+                    </div>
+                    <div class="description">
+                        <h4 class="info-title">Applicability domain</h4>
+                        <p>Investigate how your molecule fits the chemical space of already approved therapeutic
+                        molecules</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="section section-dark text-center">
+    <div class="container">
+        <h2 class="title">DAO Team</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-profile card-plain">
+                    <div class="card-avatar">
+                        <img src="assets/img/faces/smuc.png" alt="...">
+                    </div>
+                    <div class="card-block">
+                            <div class="author">
+                                <h4 class="card-title">Tomislav Šmuc, PhD</h4>
+                                <h6 class="card-category">Team Leader</h6>
+                            </div>
+                        <p class="card-description text-center">
+                        PhD in electrical engineering, senior scientist with 20+ years of experience in the fields of
+                            machine learning, biomedicine, computational biology, genomics and drug discovery.
+                        </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="https://scholar.google.dk/citations?user=kuxxEikAAAAJ&hl=da"
+                           class="btn btn-link btn-just-icon btn-neutral">
+                            <i class="ai ai-google-scholar ai-5x ai-inverse"></i></a>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="col-md-4">
+                <div class="card card-profile card-plain">
+                    <div class="card-avatar">
+                        <img src="assets/img/faces/visnja.png" alt="...">
+                    </div>
+                    <div class="card-block">
+                            <div class="author">
+                                <h4 class="card-title">Višnja Stepanić, PhD</h4>
+                                <h6 class="card-category">Drug discovery</h6>
+                            </div>
+                        <p class="card-description text-center">
+                            PhD in chemistry, 20+ years of experience in drug discovery, chemoinformatics, modelling
+                            protein-ligand interactions. Experience in drug discovery industry.
+                        </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="https://scholar.google.com/citations?user=bnJkSncAAAAJ"
+                           class="btn btn-link btn-just-icon btn-neutral">
+                            <i class="ai ai-google-scholar ai-5x ai-inverse"></i></a>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="col-md-4">
+                <div class="card card-profile card-plain">
+                    <div class="card-avatar">
+                        <img src="assets/img/faces/bono.png" alt="...">
+                    </div>
+                    <div class="card-block">
+                            <div class="author">
+                                <h4 class="card-title">Bono Lučić, PhD</h4>
+                                <h6 class="card-category">Molecular modeling</h6>
+                            </div>
+                        <p class="card-description text-center">
+                        PhD in theoretical chemistry, senior scientist, 20+ years of experience in developing algorithms
+                            and methodology for QSAR modeling and toxicity chemoinformatics.
+                        </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="https://scholar.google.com/citations?user=z8TnZFUAAAAJ"
+                           class="btn btn-link btn-just-icon btn-neutral">
+                            <i class="ai ai-google-scholar ai-5x ai-inverse"></i></a>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="col-md-4">
+                <div class="card card-profile card-plain">
+                    <div class="card-avatar">
+                        <img src="assets/img/faces/ozren.png" alt="...">
+                    </div>
+                    <div class="card-block">
+                            <div class="author">
+                                <h4 class="card-title">Ozren Jović, PhD</h4>
+                                <h6 class="card-category">Molecular modeling</h6>
+                            </div>
+                        <p class="card-description text-center">
+                        PhD in chemistry, 10+ years of experience in the fields of computational chemistry,
+                            chemoinformatics, QSAR and modeling ligand protein interactions.
+                        </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="https://scholar.google.dk/citations?user=7WQX2AMAAAAJ&hl=da&oi=sra"
+                           class="btn btn-link btn-just-icon btn-neutral">
+                            <i class="ai ai-google-scholar ai-5x ai-inverse"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-profile card-plain">
+                    <div class="card-avatar">
+                        <img src="assets/img/faces/lipic.png" alt="...">
+                    </div>
+                    <div class="card-block">
+                            <div class="author">
+                                <h4 class="card-title">Tomislav Lipić, PhD</h4>
+                                <h6 class="card-category">Machine learning</h6>
+                            </div>
+                        <p class="card-description text-center">
+                        PhD in computer science, senior scientist, research interests include network representation learning, interpretable and scalable machine learning and deep learning.
+                        </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="https://scholar.google.com/citations?user=wC25hbcAAAAJ"
+                           class="btn btn-link btn-just-icon btn-neutral">
+                            <i class="ai ai-google-scholar ai-5x ai-inverse"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-profile card-plain">
+                    <div class="card-avatar">
+                        <img src="assets/img/faces/dionizije.png" alt="...">
+                    </div>
+                    <div class="card-block">
+                            <div class="author">
+                                <h4 class="card-title">Dionizije Fa</h4>
+                                <h6 class="card-category">Machine learning</h6>
+                            </div>
+                        <p class="card-description text-center">
+                        MSc in chemical engineering and technology. Working on machine and representation learning in
+                            pharmacogenomics
+                        </p>
+                        <br>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="https://github.com/dionizijefa" class="btn btn-link btn-just-icon btn-neutral">
+                            <i class="fa fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="section">
+        <div class="container">
+            <div class="row justify-content-center">
+                    <h2 class="text-center">Discover more models on AI4EU experiments platform</h2>
+                    <div class="section" id="carousel">
+                      <div class="row">
+                              <div class="card page-carousel">
+                                  <ngb-carousel>
+                                      <ng-template ngbSlide>
+                                          <a href="https://aiexp.ai4europe.eu/#/home" target="_blank">
+                                          <img src="assets/img/ai4eu-discover.png" alt="AI4EU ecosystem">
+                                          </a>
+                                          <div class="carousel-caption">
+                                              <p>AI4EU ecosystem</p>
+                                          </div>
+                                      </ng-template>
+                                      <ng-template ngbSlide>
+                                          <a href="https://aiexp.ai4europe.eu/#/marketPlace" target="_blank">
+                                          <img src="assets/img/ai4eu-marketplace.png" alt="AI4EU experiments">
+                                          </a>
+                                          <div class="carousel-caption">
+                                              <p style="color: black">AI4EU experiments</p>
+                                          </div>
+                                      </ng-template>
+                                      <ng-template ngbSlide>
+                                          <a href="https://aiexp.ai4europe.eu/#/marketSolutions?solutionId=33de7b45-cc1e-4ff4-b01a-7eb08c5859e9&revisionId=b8f10760-6b7d-4b6c-aea9-74a7851e2027&parentUrl=marketplace#md-model-detail-template" target="_blank">
+                                          <img src="assets/img/dao_ai4eu.png" alt="Drug attrition oracle on AI4EU">
+                                          </a>
+                                          <div class="carousel-caption">
+                                              <p>Drug Attrition Oracle on AI4EU</p>
+                                          </div>
+                                      </ng-template>
+                                  </ngb-carousel>
+                              </div>
+                      </div>
+                </div>
+        </div>
+    </div>
+    </div>
+<!--    <div class="section landing-section section-dark">-->
+<!--        <div class="container">-->
+<!--            <div class="row">-->
+<!--                <div class="col-md-8 mr-auto ml-auto">-->
+<!--                    <h2 class="text-center">Let us know if you have any questions</h2>-->
+<!--                    <form class="contact-form">-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-6">-->
+<!--                                <label>Name</label>-->
+<!--                                <div class="input-group" [ngClass]="{'input-group-focus':focus===true}">-->
+<!--                                    <div class="input-group-prepend">-->
+<!--                                      <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>-->
+<!--                                    </div>-->
+<!--                                    <input type="text" class="form-control" placeholder="Name" (focus)="focus=true" (blur)="focus=false" >-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="col-md-6">-->
+<!--                                <label>Email</label>-->
+<!--                                <div class="input-group" [ngClass]="{'input-group-focus':focus1===true}">-->
+<!--                                    <div class="input-group-prepend">-->
+<!--                                      <span class="input-group-text">  <i class="nc-icon nc-email-85"></i></span>-->
+<!--                                    </div>-->
+<!--                                    <input type="text" class="form-control" placeholder="Email" (focus)="focus1=true" (blur)="focus1=false" >-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <label>Message</label>-->
+<!--                        <textarea class="form-control" rows="4" placeholder="Your message"></textarea>-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-4 mr-auto ml-auto">-->
+<!--                                <button class="btn btn-danger btn-lg btn-fill">Send Message</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+</div>

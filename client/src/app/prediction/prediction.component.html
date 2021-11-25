@@ -1,0 +1,348 @@
+<div class="wrapper">
+    <div class="page-header page-header-xs" data-parallax="true"
+         style="background-image: url('../../assets/img/landing.jpg');">
+        <div class="filter"></div>
+    </div>
+</div>
+<ngb-alert *ngIf="explainRequestError==true || complementRequestError==true" type="danger" dismissible="true" (click)="removeWarning()">
+  <div class="row justify-content-center">
+      <ng-container>
+        <i class="nc-icon nc-bell-55" style="margin-right: 10px"></i>
+      </ng-container>
+      Too many requests. Explainer requests are limited to 1 per minute and 10 per hour.
+      <button type="button" name="button" class="close"></button>
+  </div>
+</ngb-alert>
+    <div class="container">
+        <div class="row justify-content-center">
+            <h3>Drug Attrition Oracle - GCN Conformal prediction</h3>
+            <a class="nav-link" rel="tooltip" style="padding: 0; margin-top: 28px"
+               title="What is a conformal prediction?" placement="top"
+                   href="https://blog.dataiku.com/measuring-models-uncertainty-conformal-prediction" target="_blank">
+                   <i class="nc-icon nc-alert-circle-i" style="font-size: 20px; margin-left: 2px"></i>
+            </a>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 20px">
+            <div class="col-md-4" style="margin-right: 10px">
+                <div class="row">
+                    <h6>Molecule smiles:</h6>
+                    <p>{{moleculeSmiles['smilesInput']}}</p>
+                </div>
+                <div class="row">
+                    <h6>Molecule structure</h6>
+                    <div #moleculeVis></div>
+                    <p>This chemical structure is the most similar to drugs with ATC code
+                        <a href="https://www.atccode.com/{{ prediction['similarities']['atc_similarity'][0][0] }}"
+                           title="Go to atccode.com"
+                           target="_blank" rel="noopener">{{ prediction['similarities']['atc_similarity'][0][0] }}</a> with mean Tanimoto similarity of
+                        {{ prediction['similarities']['atc_similarity'][0][1] }}, followed by ATC code
+                        <a href="https://www.atccode.com/{{ prediction['similarities']['atc_similarity'][1][0] }}"
+                           title="Go to atccode.com"
+                           target="_blank" rel="noopener">{{ prediction['similarities']['atc_similarity'][1][0] }}</a> with mean Tanimoto similarity of
+                        {{ prediction['similarities']['atc_similarity'][1][1]}} </p>
+                </div>
+            </div>
+            <div class="col-md-4 justify-content-center" style="margin-left: 10px">
+                <div *ngIf="prediction['predictedClass']==1" style="color: #f33816">
+                    <div class="row justify-content-center">
+                    <h3>Withdrawn!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-simple-remove" style="font-size: 100px"></i>
+                    </div>
+                </div>
+                <div *ngIf="prediction['predictedClass']==0" style="color: #86d9ab">
+                    <div class="row justify-content-center">
+                    <h3>Approved!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
+                    </div>
+                </div>
+                <h6>Probability of class "withdrawn"</h6>
+                <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
+                class="cold-md-4 ml-auto mr-auto">
+                </div>
+                <ng-template #thenTemplate>
+                <ngb-progressbar type="success" [value]="prediction['predictedProbability']"
+                                 title="{{prediction['predictedProbability']}}% probability that the molecule belongs to the withdrawn class" style="cursor: pointer"
+                      [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar>
+                </ng-template>
+                <ng-template #elseTemplate>
+                <ngb-progressbar type="danger" [value]="prediction['predictedProbability']"
+                                 title="{{prediction['predictedProbability']}}% probability that the molecule belongs to the withdrawn class" style="cursor: pointer"
+                                      [max]="100">{{prediction['predictedProbability']}}%</ngb-progressbar>
+                </ng-template>
+                <div class="row" style="margin-left: auto; margin-top: 15px;">
+                <h6>P value approved</h6>
+                <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="P value defines confidence prediction region which contains class label Approved"
+                   style="font-size: 15px; cursor: pointer"></i>
+                </div>
+                <ngb-progressbar type="secondary" [value]="prediction['approvedP']"
+                                 style="cursor: pointer"
+                                 title="{{ (prediction['approvedP']*100).toFixed(0) }}% confidence prediction region contains class label Approved"
+                      [max]="1">{{ prediction['approvedP'] }}</ngb-progressbar>
+                <div class="row" style="margin-left: auto; margin-top: 15px;">
+                <h6>P value withdrawn</h6>
+                <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="P value defines confidence prediction region which contains class label Withdrawn"
+                   style="font-size: 15px; cursor: pointer"></i>
+                </div>
+                <ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"
+                                 style="cursor: pointer"
+                                 title="{{ (prediction['withdrawnP']*100).toFixed(0) }}% confidence prediction region contains class label Withdrawn"
+                      [max]="1">{{prediction['withdrawnP']}}</ngb-progressbar>
+            </div>
+<!--            <div class="row justify-content-center" style="margin-top: 20px">-->
+<!--                <h5>Quantitative estimation of drug-likeness</h5>-->
+<!--                <table class="table table-striped">-->
+<!--                  <thead>-->
+<!--                  <tr>-->
+<!--                    <th scope="col">QED: {{ prediction['qedProp']['QED'] }}%</th>-->
+<!--                    <th scope="col"> Lipinski's rule </th>-->
+<!--                    <th scope="col"> Ghose filter </th>-->
+<!--                    <th scope="col"> Veber's rule </th>-->
+<!--                  </tr>-->
+<!--                  </thead>-->
+<!--                  <tbody>-->
+<!--                  <tr>-->
+<!--                    <td>Molecular Weight: {{ prediction['qedProp']['MW'] }}</td>-->
+<!--                    <td *ngIf="prediction['qedProp']['MW'] <=500">-->
+<!--                        <i class="nc-icon nc-check-2" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                    <td *ngIf="prediction['qedProp']['MW'] > 500">-->
+<!--                        <i class="nc-icon nc-simple-remove" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                    <td *ngIf="prediction['qedProp']['MW'] >=180 <=480">-->
+<!--                        <i class="nc-icon nc-check-2" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                    <td *ngIf="prediction['qedProp']['MW'] <180 >480">-->
+<!--                        <i class="nc-icon nc-simple-remove" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                    <td></td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>ALogP: {{ prediction['qedProp']['ALOGP'] }}</td>-->
+<!--                    <td *ngIf="prediction['qedProp']['ALOGP'] <=5">-->
+<!--                        <i class="nc-icon nc-check-2" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                    <td *ngIf="prediction['qedProp']['ALOGP'] > 5">-->
+<!--                        <i class="nc-icon nc-simple-remove" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                    <td *ngIf="prediction['qedProp']['ALOGP'] >=-0.4 &&-->
+<!--                                prediction['qedProp']['ALOGP'] <= 5.6">-->
+<!--                        <i class="nc-icon nc-check-2" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                    <td *ngIf="prediction['qedProp']['ALOGP'] <-0.4 ||-->
+<!--                                prediction['qedProp']['ALOGP'] > 5.6">-->
+<!--                        <i class="nc-icon nc-simple-remove" rel="tooltip" placement="top"></i>-->
+<!--                    </td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>Aromatic Rings: {{ prediction['qedProp']['AROM'] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>Hydrogen Bond Donors: {{ prediction['qedProp']['HBD'] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>Hydrogen Bond Acceptors: {{ prediction['qedProp']['HBA'] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>Alerts: {{ prediction['qedProp']['ALERTS'] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>Rotatable Bonds: {{ prediction['qedProp']['ROTB'] }}</td>-->
+<!--                  </tr>-->
+<!--                  <tr>-->
+<!--                    <td>Polar Surface Area: {{ prediction['qedProp']['PSA'] }}</td>-->
+<!--                  </tr>-->
+<!--                  </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+            <div class="row justify-content-center" style="margin-top: 20px">
+                <h6>Most similar approved and withdrawn drugs in the database</h6>
+                <table class="table table-striped" style="width: 70%">
+                  <thead>
+                  <tr>
+                    <th scope="col">Drug</th>
+                    <th scope="col">Tanimoto similarity</th>
+                    <th scope="col">Withdrawn status</th>
+                    <th scope="col">ATC codes</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['similarity']['chembl_id'][0] }}/"
+                           target="_blank" rel="noopener" title="ChEMBL compound report">
+                        {{ prediction['similarities']['similarity']['name'][0] }}</a></td>
+                    <td>{{ prediction['similarities']['similarity']['tanimoto_similarity'][0] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['status'][0] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['atc_code'][0] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['similarity']['chembl_id'][1] }}/"
+                           target="_blank" rel="noopener" title="ChEMBL compound report">
+                        {{ prediction['similarities']['similarity']['name'][1] }}</a></td>
+                    <td>{{ prediction['similarities']['similarity']['tanimoto_similarity'][1] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['status'][1] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['atc_code'][1] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['similarity']['chembl_id'][2] }}/"
+                           target="_blank" rel="noopener" title="ChEMBL compound report">
+                        {{ prediction['similarities']['similarity']['name'][2] }}</a></td>
+                    <td>{{ prediction['similarities']['similarity']['tanimoto_similarity'][2] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['status'][2] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['atc_code'][2] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['similarity']['chembl_id'][3] }}/"
+                           target="_blank" rel="noopener" title="ChEMBL compound report">
+                        {{ prediction['similarities']['similarity']['name'][3] }}</a></td>
+                    <td>{{ prediction['similarities']['similarity']['tanimoto_similarity'][3] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['status'][3] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['atc_code'][3] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['similarity']['chembl_id'][1] }}/"
+                           target="_blank" rel="noopener" title="ChEMBL compound report">
+                        {{ prediction['similarities']['similarity']['name'][4] }}</a></td>
+                    <td>{{ prediction['similarities']['similarity']['tanimoto_similarity'][4] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['status'][4] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['atc_code'][4] }}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="https://www.ebi.ac.uk/chembl/compound_report_card/{{ prediction['similarities']['similarity']['chembl_id'][1] }}/"
+                           target="_blank" rel="noopener" title="ChEMBL compound report">
+                        {{ prediction['similarities']['similarity']['name'][5] }}</a></td>
+                    <td>{{ prediction['similarities']['similarity']['tanimoto_similarity'][5] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['status'][5] }}</td>
+                    <td>{{ prediction['similarities']['similarity']['atc_code'][5] }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 20px">
+            <div class="col-md-4" *ngIf="explainerRunning; then explainSpinner; else explainButton">
+            </div>
+            <ng-template #explainButton>
+                <div class="col-md-4">
+                <button *ngIf="prediction && generatedExplanation==false"
+                (click)="onExplain()" class="btn btn-danger btn-block btn-round">Explain predictions</button>
+                </div>
+            </ng-template>
+            <ng-template #explainSpinner>
+                <div class="col-md-4 justify-content-center">
+                <mat-progress-spinner *ngIf="explainerRunning==true"
+                                      style="margin:0 auto;" mode="indeterminate" [color]="'warn'" [diameter]="40"></mat-progress-spinner>
+                </div>
+            </ng-template>
+            <div class="col-md-4 justify-content-center"
+             *ngIf="prediction && complementaryRunning==false && generatedComplementary==false">
+            <button (click)="onComplementary()" class="btn btn-danger btn-block btn-round">Complementary model</button>
+            </div>
+            <div class="col-md-4 justify-content-center"
+            *ngIf="prediction && complementaryRunning==true && generatedComplementary==false">
+            <mat-progress-spinner style="margin:0 auto;" mode="indeterminate" [color]="'warn'" [diameter]="40"></mat-progress-spinner>
+            </div>
+        </div>
+    <div class="row">
+    <div class="col-lg-4 ml-auto mr-auto">
+        <h4 *ngIf="generatedExplanation==true" style="margin-botton: 20px">GNN explainer</h4>
+        <div class="row">
+           <p *ngIf="generatedExplanation==true">Highlighted bonds are parts of the molecule that are most influential for the model's predictions.
+               Edges that have an absolute z-score greater than one are highlighted</p>
+        <div #moleculeGraph></div>
+        </div>
+        <div class="row">
+           <p *ngIf="generatedExplanation==true">Complete set of atom features with their influence on the model predictions.
+               Higher scores are more influential.</p>
+        <div #featuresGraph></div>
+        </div>
+    </div>
+    <div class="col-lg-4 ml-auto mr-auto">
+        <div *ngIf="generatedComplementary==true">
+        <div *ngIf="generatedComplementary==true" class="row justify-content center">
+        <h4 style="margin-botton: 20px">Complementary model</h4>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Complementary model uses predictions of additional ADME and TOX properties as features of the model along with the output probability of the GCN model. Selected features have the highest feature importance out of a bigger set from the Therapeutic Data Commons molecular prediction tasks."
+                   style="font-size: 15px; cursor: pointer; margin-top: 35px"></i>
+        </div>
+            <div *ngIf="complementary['prediction']==1" style="color: #f33816">
+                    <div class="row justify-content-center">
+                    <h3>Withdrawn!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-simple-remove" style="font-size: 100px"></i>
+                    </div>
+                </div>
+            <div *ngIf="complementary['prediction']==0" style="color: #86d9ab">
+                    <div class="row justify-content-center">
+                    <h3>Approved!</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
+                    </div>
+            </div>
+        <h5>Individual properties prediction: </h5>
+        <div class="row justify content center">
+        <p>1. GCN Probability </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Predicted probability from the GCN conformal prediction"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
+            <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"></div>
+        <div class="row justify content center">
+            <p>2. Metabolism </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Metabolism contribution is estimated by predicting if the molecule is metabolized by CYP2C9 enzyme"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100"
+                            title="{{complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100}}% probability that the molecule is CYP2C9 substrate" style="cursor: pointer"
+                      [max]="100">{{complementary['tasks']['CYP2C9_Substrate_CarbonMangels']*100}}%</ngb-progressbar></p>
+        <div class="row justify content center">
+            <p>3. Toxicity </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Toxicity is estimated by predicting if the molecules has the potential to activate Peroxisome Proliferator-activated receptor gamma "
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
+        <p><ngb-progressbar type="sucess" [value]="complementary['tasks']['nr-ppar-gamma']*100"
+                            title="{{complementary['tasks']['nr-ppar-gamma']*100}}% probability that the molecule activates ppar-gamma" style="cursor: pointer"
+                      [max]="100">{{complementary['tasks']['nr-ppar-gamma']*100}}%</ngb-progressbar></p>
+        <div class="row justify content center">
+            <p>4. Absorption </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Absorption is estimated by predicting if the molecules has high oral bioavailability"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
+        <p><ngb-progressbar type="sucess"
+                            title="{{complementary['tasks']['Bioavailability_Ma']*100}}% probability that the molecule is highly bioavailable" style="cursor: pointer"
+                            [value]="complementary['tasks']['Bioavailability_Ma']*100"
+                      [max]="100">{{complementary['tasks']['Bioavailability_Ma']*100}}%</ngb-progressbar></p>
+        <div class="row justify content center">
+            <p>5. Excretion </p>
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="Excretion is estimated by predicting the volume of plasma cleared of a drug over a specified period of time"
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+        </div>
+        <p>{{complementary['tasks']['Clearance_Hepatocyte_AZ'].toFixed(2)}} <span>&#181;</span>Lmin<sup>-1</sup>(10<sup>-6</sup>cells)<sup>-1</sup></p>
+        </div>
+    <div class="row justify-content-center" style="margin-top: 20px">
+        <div *ngIf="generatedComplementary==true" class="row justify-content-center">
+        <h5>Influence of each prediction</h5>
+        <a href="https://shap.readthedocs.io/en/latest/index.html"
+        class="nav-link" rel="tooltip" style="padding: 0; margin-top: 5px">
+            <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="What is SHAP?"
+                   style="font-size: 15px; cursor: pointer"></i>
+            </a>
+        </div>
+    <div #shap title="Variables with blue bars increase the log-odds of a molecule being approved, while the red ones increase the log-odds of being withdrawn"
+    style="cursor: pointer"></div>
+    </div>
+    </div>
+    </div>
+</div>
