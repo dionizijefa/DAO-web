@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map'
 
 
 // const SERVER_URL = 'http://192.168.2.111:8081/';
-const SERVER_URL = 'http://localhost:5000/'
+const SERVER_URL = 'api/'
 
 @Injectable({
   providedIn: 'root'

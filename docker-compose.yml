@@ -7,7 +7,6 @@ services:
   nginx:
     container_name: nginx_container
     restart: always
-    container_name: nginx
     image: nginx
     build:
       context: .
@@ -16,7 +15,6 @@ services:
      - ./client/dist:/usr/share/nginx/html
     ports:
       - "80:80"
-      - "443:443"
     depends_on:
       - flask
 
@@ -27,5 +25,3 @@ services:
     build: ./server
     volumes:
     - ./server/main:/usr/src/app
-    ports:
-      - "5000:5000"

@@ -1,27 +1,31 @@
-FROM continuumio/anaconda3
+FROM continuumio/miniconda3
+#FROM continuumio/anaconda3
 
 MAINTAINER Dionizije Fa "dionizije.fa@hotmail.com"
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED 0
 
 RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
-ADD environment.yml /usr/src/app/
+COPY . /usr/src/app/
 
-RUN conda env create -f environment.yml
+#RUN apt-get update && apt-get upgrade -y && apt-get install -y g++
 
-RUN echo "source activate $(head -1 environment.yml | cut -d' ' -f2)" > ~/.bashrc
+RUN apt-get update && apt-get upgrade -y && apt-get install -y build-essential
 
-ENV PATH /opt/conda/envs/$(head -1 environment.yml | cut -d' ' -f2)/bin:$PATH
+RUN conda env create -f environment.yml  \
+    && pip install shap==0.38.1
 
-RUN conda init
+SHELL ["conda", "run", "-n", "dao_web", "/bin/bash", "-c"]
 
-ADD ./main/uwsgi.ini /etc/uwsgi.ini
+#ENV PATH /opt/conda/envs/$(head -1 environment.yml | cut -d' ' -f2)/bin:$PATH
+
+#ENTRYPOINT ["uwsgi", "--ini", "/etc/uwsgi.ini"]
+
+COPY uwsgi.ini /etc/uwsgi.ini
 
 EXPOSE 5000
 
-CMD ["conda", "run", "dao_web", "pip", "install", "shap"]
-
-CMD ["conda", "run", "-n", "dao_web", "uwsgi", "--ini", "/etc/uwsgi.ini"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "dao_web", "uwsgi", "--ini", "/etc/uwsgi.ini"]
