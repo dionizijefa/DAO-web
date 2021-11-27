@@ -29,7 +29,7 @@ def index(path):
         abort(404)
 """        
 
-@app.route('/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 @limiter.limit(["1 per minute", "10 per hour"],
                error_message='Service is limited to 10 predictions per hour and 1 per minute'
                )             
@@ -48,7 +48,7 @@ def predict():
                     'similarities': similarities})
 
 
-@app.route('/explain', methods=['POST'])
+@app.route('/api/explain', methods=['POST'])
 @limiter.limit(["1 per minute", "10 per hour"],
                error_message='Service is limited to 10 predictions per hour and 1 per minute',
                per_method="True")
@@ -64,7 +64,7 @@ def explain():
     })
 
 
-@app.route('/complement', methods=['POST'])
+@app.route('/api/complement', methods=['POST'])
 @limiter.limit(["1 per minute", "10 per hour"],
                error_message='Route is limited to 10 predictions per hour and 1 per minute')           
 def complement():
