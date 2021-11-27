@@ -145,6 +145,7 @@ dependencies:
   - gxx_linux-64
   - pip:
     - cloudpickle==2.0.0
+    - shap==0.38.1
     - flask-limiter==1.4
     - limits==1.5.1
     - llvmlite==0.36.0

@@ -11,18 +11,11 @@ WORKDIR /usr/src/app
 
 COPY . /usr/src/app/
 
-#RUN apt-get update && apt-get upgrade -y && apt-get install -y g++
-
 RUN apt-get update && apt-get upgrade -y && apt-get install -y build-essential
 
-RUN conda env create -f environment.yml  \
-    && pip install shap==0.38.1
+RUN conda env create -f environment.yml
 
 SHELL ["conda", "run", "-n", "dao_web", "/bin/bash", "-c"]
-
-#ENV PATH /opt/conda/envs/$(head -1 environment.yml | cut -d' ' -f2)/bin:$PATH
-
-#ENTRYPOINT ["uwsgi", "--ini", "/etc/uwsgi.ini"]
 
 COPY uwsgi.ini /etc/uwsgi.ini
 
