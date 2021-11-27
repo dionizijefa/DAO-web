@@ -10,7 +10,7 @@ services:
     image: nginx
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: nginx/Dockerfile
     volumes:
      - ./client/dist:/usr/share/nginx/html
     ports:
