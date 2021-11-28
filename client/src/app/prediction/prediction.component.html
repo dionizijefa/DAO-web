@@ -1,12 +1,12 @@
 <div class="wrapper">
     <div class="page-header page-header-xs" data-parallax="true"
-         style="background-image: url('../../assets/img/landing.jpg');">
+         style="background-image: url('../../assets/img/landing_small.jpg');">
         <div class="filter"></div>
     </div>
 </div>
 <ngb-alert *ngIf="explainRequestError==true || complementRequestError==true" type="danger" dismissible="true" (click)="removeWarning()">
   <div class="row justify-content-center">
-      <ng-container>
+      <ng-container>s
         <i class="nc-icon nc-bell-55" style="margin-right: 10px"></i>
       </ng-container>
       Too many requests. Explainer requests are limited to 1 per minute and 10 per hour.
