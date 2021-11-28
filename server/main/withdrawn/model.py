@@ -321,7 +321,7 @@ class DAOWeb:
         
         return output, predicted_class, round(approved_p_value, 2), round(withdrawn_p_value, 2), svg, qed_prop, similarities
 
-    def explain(self, smiles, epochs=75):
+    def explain(self, smiles, epochs=33):
         features = ["boron", "carbon", "nitrogen", "oxygen", "fluorine", "phosphorus", "sulfur",
                     "chlorine", "bromine", "iodine", "other", "zero_Hs", "one_H", "two_Hs", "three_Hs",
                     "four_Hs", "s", "sp", "sp2", "sp3", "sp3d", "sp3d2", "unspecified_hybr",
