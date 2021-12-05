@@ -32,5 +32,3 @@ services:
     container_name: app_build
     image: flask
     build: ./client
-    depends_on:
-      - flask
