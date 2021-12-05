@@ -1,7 +1,7 @@
 FROM node:14.17.3-stretch-slim
 
 WORKDIR /app
-COPY package.json package-lock.json  /app/
+COPY package.json /app/
 
 RUN npm install -g @angular/cli@11.0.4
 
