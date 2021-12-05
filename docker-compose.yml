@@ -11,8 +11,8 @@ services:
     build:
       context: .
       dockerfile: nginx/Dockerfile
-    volumes:
-     - /usr/src/client/dist:/usr/share/nginx/html
+#    volumes:
+#     - .client/dist:/usr/share/nginx/html
     ports:
       - "80:80"
     depends_on:

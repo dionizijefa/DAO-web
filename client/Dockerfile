@@ -9,6 +9,10 @@ RUN npm install -g @angular/cli \
 
 RUN ng build --prod
 
+RUN mkdir -p /usr/share/nginx/html
+
+COPY --from=build /usr/src/client/dist /usr/share/nginx/html
+
 
 
 
