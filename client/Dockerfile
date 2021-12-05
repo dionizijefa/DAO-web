@@ -1,4 +1,4 @@
-FROM node:14.17.3-stretch-slim AS build
+FROM node:14.17.3-stretch-slim
 
 WORKDIR /usr/src/client
 
@@ -11,7 +11,7 @@ RUN ng build --prod
 
 RUN mkdir -p /usr/share/nginx/html
 
-COPY --from=build /usr/src/client/dist /usr/share/nginx/html
+COPY /usr/src/client/dist /usr/share/nginx/html
 
 
 
