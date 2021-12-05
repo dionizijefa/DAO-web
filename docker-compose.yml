@@ -30,5 +30,5 @@ services:
 
   app:
     container_name: app_build
-    image: flask
+    image: app
     build: ./client
