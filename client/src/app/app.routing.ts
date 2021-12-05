@@ -13,7 +13,7 @@ const routes: Routes = [
     { path: 'landing', component: LandingComponent },
     { path: 'prediction/:id', component: PredictionComponent },
     { path: 'documentation', component: DocumentationComponent},
-    { path: '**', component: LandingComponent },
+    // { path: '**', component: LandingComponent },
 ];
 
 @NgModule({

@@ -59,7 +59,7 @@
                     <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
                     </div>
                 </div>
-                <h6>Probability of class "withdrawn"</h6>
+                <h6>Probability estimate for withdrawn class</h6>
                 <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
                 class="cold-md-4 ml-auto mr-auto">
                 </div>
@@ -290,7 +290,7 @@
         <div class="row justify content center">
         <p>1. GCN Probability </p>
             <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="Predicted probability from the GCN conformal prediction"
+                   title="Probability estimate for withdrawn class from the GCN conformal prediction"
                    style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
         </div>
             <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"></div>

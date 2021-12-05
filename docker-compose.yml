@@ -25,3 +25,12 @@ services:
     build: ./server
     volumes:
     - ./server/main:/usr/src/app
+    depends_on:
+      - app
+
+  app:
+    container_name: app_build
+    image: flask
+    build: ./client
+    depends_on:
+      - flask
