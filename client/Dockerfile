@@ -11,7 +11,7 @@ RUN ng build --prod
 
 RUN mkdir -p /usr/share/nginx/html
 
-COPY /usr/src/client/dist /usr/share/nginx/html
+COPY ./dist /usr/share/nginx/html
 
 
 
