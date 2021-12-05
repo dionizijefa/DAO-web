@@ -1,11 +1,14 @@
-FROM ubuntu as intermediate
-#ARG GITHUB_TOKEN=${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}
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y git && \
-    apt install -y nodejs &&  \
-    npm install -y @angular/cli
+FROM node:14.17.3-stretch-slim AS build
 
-RUN git pull https://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@github.com/dionizijefa/DAO-web
+WORKDIR /usr/src/client
+
+COPY . .
+
+RUN npm install -g @angular/cli \
+    && npm install
 
 RUN ng build --prod
+
+
+
+

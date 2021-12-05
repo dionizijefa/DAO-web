@@ -12,7 +12,7 @@ services:
       context: .
       dockerfile: nginx/Dockerfile
     volumes:
-     - ./client/dist:/usr/share/nginx/html
+     - /usr/src/client/dist:/usr/share/nginx/html
     ports:
       - "80:80"
     depends_on:
