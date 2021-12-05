@@ -1,18 +1,14 @@
 FROM node:14.17.3-stretch-slim
 
-WORKDIR /usr/src/client
+WORKDIR /app
+COPY package.json package-lock.json  /app/
 
-COPY . .
+RUN npm install -g @angular/cli@11.0.4
 
-RUN npm install -g @angular/cli \
-    && npm install
+RUN cd /app && npm install
 
-RUN ng build --prod
+COPY .  /app
 
-RUN mkdir -p /usr/share/nginx/html
+RUN cd /app && ng build --prod
 
-COPY ./dist /usr/share/nginx/html
-
-
-
-
+COPY /app/dist /usr/share/nginx/html
