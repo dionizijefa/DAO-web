@@ -11,4 +11,4 @@ COPY .  /app
 
 RUN cd /app && ng build --prod
 
-COPY /app/dist /usr/share/nginx/html
+COPY /app/dist/ /usr/share/nginx/html
