@@ -6,6 +6,6 @@ RUN apt-get update && \
     apt install -y nodejs &&  \
     npm install -y @angular/cli
 
-RUN git clone https://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@github.com/dionizijefa/DAO-web
+RUN git pull https://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@github.com/dionizijefa/DAO-web
 
 RUN ng build --prod
