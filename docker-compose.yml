@@ -9,8 +9,7 @@ services:
     restart: always
     image: nginx
     build:
-      context: .
-      dockerfile: nginx/Dockerfile
+      context: ./client
 #    volumes:
 #     - .client/dist:/usr/share/nginx/html
     ports:
@@ -25,10 +24,3 @@ services:
     build: ./server
     volumes:
     - ./server/main:/usr/src/app
-    depends_on:
-      - app
-
-  app:
-    container_name: app_build
-    image: app
-    build: ./client
