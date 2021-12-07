@@ -43,7 +43,24 @@
                 </div>
             </div>
             <div class="col-md-4 justify-content-center" style="margin-left: 10px">
-                <div *ngIf="prediction['predictedClass']==1" style="color: #f33816">
+                <div class="row">
+                <h5>Choose a significance level</h5>
+                <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
+                   title="With an error rate of at most <significance> one of these two classes will be correct. Lower values are better."
+                   style="font-size: 15px; cursor: pointer; margin-top: 5px"></i>
+                </div>
+                <ngx-slider class="ngx-slider-pointer" [(value)]="sliderValue" [options]="sliderOptions" style="margin-bottom: 30px;"></ngx-slider>
+                <p>With an error rate of at most {{(sliderValue*100).toFixed(0)}}% one of these classes will be the correct class:</p>
+                <div class="row justify-content-center">
+                <div *ngIf="1-sliderValue > prediction['withdrawnP'] && 1-sliderValue > prediction['approvedP']" class="col mr-auto">
+                    <div class="row justify-content-center">
+                    <h3>No prediction</h3>
+                    </div>
+                    <div class="row justify-content-center">
+                    <i class="nc-icon nc-simple-delete" style="font-size: 100px"></i>
+                    </div>
+                </div>
+                <div *ngIf="1-sliderValue <= prediction['withdrawnP']" class="col mr-auto" style="color: #f33816">
                     <div class="row justify-content-center">
                     <h3>Withdrawn!</h3>
                     </div>
@@ -51,13 +68,14 @@
                     <i class="nc-icon nc-simple-remove" style="font-size: 100px"></i>
                     </div>
                 </div>
-                <div *ngIf="prediction['predictedClass']==0" style="color: #86d9ab">
+                <div *ngIf="1-sliderValue <= prediction['approvedP']" class="col ml-auto" style="color: #86d9ab">
                     <div class="row justify-content-center">
                     <h3>Approved!</h3>
                     </div>
                     <div class="row justify-content-center">
                     <i class="nc-icon nc-check-2" style="font-size: 100px"></i>
                     </div>
+                </div>
                 </div>
                 <h6>Probability estimate for withdrawn class</h6>
                 <div *ngIf="prediction['predictedProbability'] < 53; then thenTemplate; else elseTemplate"
@@ -76,7 +94,7 @@
                 <div class="row" style="margin-left: auto; margin-top: 15px;">
                 <h6>P value approved</h6>
                 <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="P value defines confidence prediction region which contains class label Approved"
+                   title="P value defines confidence prediction region which contains class label Approved. Higher values are better."
                    style="font-size: 15px; cursor: pointer"></i>
                 </div>
                 <ngb-progressbar type="secondary" [value]="prediction['approvedP']"
@@ -86,7 +104,7 @@
                 <div class="row" style="margin-left: auto; margin-top: 15px;">
                 <h6>P value withdrawn</h6>
                 <i class="nc-icon nc-alert-circle-i" rel="tooltip" placement="top"
-                   title="P value defines confidence prediction region which contains class label Withdrawn"
+                   title="P value defines confidence prediction region which contains class label Withdrawn. Higher values are better."
                    style="font-size: 15px; cursor: pointer"></i>
                 </div>
                 <ngb-progressbar type="secondary" [value]="prediction['withdrawnP']"

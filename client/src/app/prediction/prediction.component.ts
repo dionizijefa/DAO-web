@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Explanation, Prediction, SmilesInput} from '../backend.types';
 import {PredictService} from '../predict.service';
+import {Options} from '@angular-slider/ngx-slider';
 
 @Component({
   selector: 'app-prediction',
@@ -22,6 +23,12 @@ export class PredictionComponent implements AfterViewInit {
     public complementary;
     public explainRequestError = false;
     public complementRequestError = false;
+    public sliderValue = 0.3;
+    public sliderOptions: Options = {
+        floor: 0,
+        ceil: 1,
+        step: 0.01,
+      };
 
 
   constructor(private predictService: PredictService) {
@@ -83,5 +90,10 @@ export class PredictionComponent implements AfterViewInit {
   removeWarning(): void {
         this.explainRequestError = false;
         this.complementRequestError = false;
+  }
+
+  updateSlider(event) {
+    this.sliderValue = event.value;
+    console.log(this.sliderValue)
   }
 }

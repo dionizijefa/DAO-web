@@ -14,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { PredictionComponent } from './prediction/prediction.component';
 import { DocumentationComponent } from './documentation/documentation.component';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
 
 
 @NgModule({
@@ -26,16 +27,17 @@ import { DocumentationComponent } from './documentation/documentation.component'
     PredictionComponent,
     DocumentationComponent,
   ],
-  imports: [
-    BrowserModule,
-    NgbModule,
-    FormsModule,
-    RouterModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MatProgressSpinnerModule,
-  ],
+    imports: [
+        BrowserModule,
+        NgbModule,
+        FormsModule,
+        RouterModule,
+        AppRoutingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        MatProgressSpinnerModule,
+        NgxSliderModule,
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
