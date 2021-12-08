@@ -18,6 +18,8 @@ FROM nginx:alpine
 MAINTAINER Dionizije Fa "dionizije.fa@hotmail.com"
 
 # Copy custom nginx config
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
 COPY --from=build /usr/local/app/dist/ /usr/share/nginx/html
 
 EXPOSE 80
