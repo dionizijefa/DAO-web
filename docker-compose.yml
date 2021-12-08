@@ -12,6 +12,8 @@ services:
       context: ./client
 #    volumes:
 #     - .client/dist:/usr/share/nginx/html
+    volumes:
+      - /usr/share/nginx/html
     ports:
       - "80:80"
     depends_on:
