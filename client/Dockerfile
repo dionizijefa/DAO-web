@@ -4,6 +4,10 @@ WORKDIR /usr/local/app
 
 COPY ./ /usr/local/app/
 
+RUN npm cache clean -f
+
+RUN npm install -g npm@6
+
 RUN npm install -g @angular/cli@14
 
 RUN npm install
